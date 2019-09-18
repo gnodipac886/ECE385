@@ -47,7 +47,7 @@ module lad4(input logic [3:0] a4, b4,
 		g4 = (g[3]) | (g[2] & p[3]) | (g[1] & p[3] & p[2]) | (g[0] & p[3] & p[2] & p[1]);
 	end
 	
-	full_adder FA0(.a(a4[0]), .b(b4[0]), .cin(c0), .sum(sum4[0]));
+	full_adder FA0(.a(a4[0]), .b(b4[0]), .cin(C0), .sum(sum4[0]));
 	full_adder FA1(.a(a4[1]), .b(b4[1]), .cin(c1), .sum(sum4[1]));
 	full_adder FA2(.a(a4[2]), .b(b4[2]), .cin(c2), .sum(sum4[2]));
 	full_adder FA3(.a(a4[3]), .b(b4[3]), .cin(c3), .sum(sum4[3]));
