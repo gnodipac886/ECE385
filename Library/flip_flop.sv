@@ -1,4 +1,4 @@
-module register_1bit(input logic clk, din
+module flip_flop(input logic clk, din
 					output logic d, dnot);
 	always_ff @ (posedge clk)
 	begin
