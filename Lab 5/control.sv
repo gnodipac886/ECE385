@@ -1,0 +1,1 @@
+module control(input logic clearA_loadB, );
