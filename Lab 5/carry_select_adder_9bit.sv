@@ -1,8 +1,7 @@
-module carry_select_adder_8bit
+module carry_select_adder_9bit
 (
-    input   logic[7:0]     A,
-    input   logic[7:0]     B,
-    output  logic[7:0]     Sum,
+    input   logic[8:0]     A, B,
+    output  logic[8:0]     Sum,
     output  logic          CO
 );
 
@@ -12,8 +11,8 @@ module carry_select_adder_8bit
      * Your code should be completly combinational (don't use always_ff or always_latch).
      * Feel free to create sub-modules or other files. */
 	logic C1;
-	four_bit_adder fba(.A1(A[3:0]), .B1(B[3:0]), .CIN(1'b0), .SUM1(Sum[3:0]), .COUT(C1));
-    csa4 cs1(.a(A[7:4]), .b(B[7:4]), .cin(C1), .sum(Sum[7:4]), .cout(CO));
+	five_bit_adder fba(.A1(A[4:0]), .B1(B[4:0]), .CIN(1'b0), .SUM1(Sum[4:0]), .COUT(C1));
+    csa4 cs1(.a(A[8:5]), .b(B[8:5]), .cin(C1), .sum(Sum[8:5]), .cout(CO));
 endmodule
 
 module csa4(input logic [3:0] a, b,

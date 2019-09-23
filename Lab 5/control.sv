@@ -1,5 +1,5 @@
-module control(input logic clearA_loadB, reset, execute, clk, bout,
-				output logic shift_en, resetA, resetB, loadA, loadB);
+module control(input logic clearA_loadB, reset, execute, Clk, bout,
+				output logic Shift_en, resetA, resetB, loadA, loadB);
 	enum logic [1:0] {start, add, shift, sub} state, next;
 
 	logic [2:0] count;
@@ -19,21 +19,21 @@ module control(input logic clearA_loadB, reset, execute, clk, bout,
 			start : begin
 				count = 3'b000;
 				if(clearA_loadB == 1) begin
-					shift_en = 1'b0;
+					Shift_en = 1'b0;
 					resetA = 1'b1;
 					resetB = 1'b0;
 					loadA = 1'b0;
 					loadB = 1'b1;
 				end
 				else if (reset == 1) begin
-					shift_en = 1'b0;
+					Shift_en = 1'b0;
 					resetA = 1'b1;
 					resetB = 1'b1;
 					loadA = 1'b0;
 					loadB = 1'b0;
 				end
 				else if (execute == 1) begin
-					shift_en = 1'b0;
+					Shift_en = 1'b0;
 					resetA = 1'b0;
 					resetB = 1'b0;
 					loadA = 1'b0;
@@ -52,7 +52,7 @@ module control(input logic clearA_loadB, reset, execute, clk, bout,
 			shift : begin
 				//@@add code here
 				count = count + 1;
-				shift_en = 1'b1;
+				Shift_en = 1'b1;
 				resetA = 1'b0;
 				resetB = 1'b0;
 				loadA = 1'b0;
@@ -61,6 +61,8 @@ module control(input logic clearA_loadB, reset, execute, clk, bout,
 					next = sub;
 				else if (bout == 1 && count != 3'b111)
 					next = add;
+				else if (bout == 0 && count == 3'b111)
+					next = start;
 				else
 					next = shift;
 			end
@@ -73,5 +75,15 @@ module control(input logic clearA_loadB, reset, execute, clk, bout,
 		endcase
 	end
 
+	logic shoutA;
+	logic [8:0] doutA, sumA;
+	logic [7:0] doutB;
+
+	carry_select_adder_9bit adder1(.A(), .B(), 
+								   .Sum(.sumA), .CO());
+	shift_reg_9bit regA(.clk(Clk), .reset(resetA), .load(loadA), .shift_en(Shift_en), .shift_in(), .din(sumA), 
+						.shift_out(shoutA), .dout(doutA)); //what do we do with this empty connection?
+	shift_reg_8bit regB(.clk(Clk), .reset(resetB), .load(loadB), .shift_en(Shift_en), .shift_in(shoutA), .din(), 
+						.shift_out(bout), .dout(doutB)); //^^^^^^
 
 endmodule
