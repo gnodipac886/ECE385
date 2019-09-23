@@ -1,5 +1,5 @@
 module control(input logic clearA_loadB, reset, execute, clk, bout,
-				output logic shift, clearA, clearB, loadA, loadB);
+				output logic shift_en, resetA, resetB, loadA, loadB);
 	enum logic [1:0] {start, add, shift, sub} state, next;
 
 	logic [2:0] count;
@@ -19,14 +19,25 @@ module control(input logic clearA_loadB, reset, execute, clk, bout,
 			start : begin
 				count = 3'b000;
 				if(clearA_loadB == 1) begin
-					clearA = 1;
-					loadB = 1;
+					shift_en = 1'b0;
+					resetA = 1'b1;
+					resetB = 1'b0;
+					loadA = 1'b0;
+					loadB = 1'b1;
 				end
 				else if (reset == 1) begin
-					clearA = 1;
-					clearB = 1;
+					shift_en = 1'b0;
+					resetA = 1'b1;
+					resetB = 1'b1;
+					loadA = 1'b0;
+					loadB = 1'b0;
 				end
 				else if (execute == 1) begin
+					shift_en = 1'b0;
+					resetA = 1'b0;
+					resetB = 1'b0;
+					loadA = 1'b0;
+					loadB = 1'b1;
 					if(bout == 1)
 						next = add;
 					else
@@ -40,6 +51,18 @@ module control(input logic clearA_loadB, reset, execute, clk, bout,
 
 			shift : begin
 				//@@add code here
+				count = count + 1;
+				shift_en = 1'b1;
+				resetA = 1'b0;
+				resetB = 1'b0;
+				loadA = 1'b0;
+				loadB = 1'b0;
+				if(bout == 1 && count == 3'b111)
+					next = sub;
+				else if (bout == 1 && count != 3'b111)
+					next = add;
+				else
+					next = shift;
 			end
 
 			sub : begin
