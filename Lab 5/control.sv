@@ -1,11 +1,10 @@
-module control(input logic clearA_loadB, reset, execute, Clk, bout,
-				input logic [8:0] mand
-				output logic Shift_en, resetA, resetB, loadA, loadB);
-	enum logic [1:0] {start, add, shift, sub} state, next;
+module control(input logic clearA_loadB, reset, execute, clk, bout,
+				output logic Shift_en, Sub_en, clr_ld);
+	enum logic [2:0] {start, add, shift, sub, done} state, next;
 
 	logic [2:0] count;
 
-	always_ff @(posedge clk) begin
+	always_ff @(posedge clk or posedge reset) begin
 		if(reset) begin
 			state <= start;
 		else
@@ -20,25 +19,14 @@ module control(input logic clearA_loadB, reset, execute, Clk, bout,
 			start : begin
 				count = 3'b000;
 				if(clearA_loadB == 1) begin
-					Shift_en = 1'b0;
-					resetA = 1'b1;
-					resetB = 1'b0;
-					loadA = 1'b0;
-					loadB = 1'b1;
-				end
-				else if (reset == 1) begin
-					Shift_en = 1'b0;
-					resetA = 1'b1;
-					resetB = 1'b1;
-					loadA = 1'b0;
-					loadB = 1'b0;
+					Shift_en <= 1'b0;
+					Sub_en <= 1'b0;
+					clr_ld <= 1'b1;
 				end
 				else if (execute == 1) begin
-					Shift_en = 1'b0;
-					resetA = 1'b0;
-					resetB = 1'b0;
-					loadA = 1'b0;
-					loadB = 1'b1;
+					Shift_en <= 1'b0;
+					Sub_en <= 1'b0;
+					clr_ld <= 1'b0;
 					if(bout == 1)
 						next = add;
 					else
@@ -52,18 +40,16 @@ module control(input logic clearA_loadB, reset, execute, Clk, bout,
 
 			shift : begin
 				//@@add code here
+				Shift_en <= 1'b1;
+				Sub_en <= 1'b0;
+				clr_ld <= 1'b0;
 				count = count + 1;
-				Shift_en = 1'b1;
-				resetA = 1'b0;
-				resetB = 1'b0;
-				loadA = 1'b0;
-				loadB = 1'b0;
 				if(bout == 1 && count == 3'b111)
 					next = sub;
 				else if (bout == 1 && count != 3'b111)
 					next = add;
 				else if (bout == 0 && count == 3'b111)
-					next = start;
+					next = done;
 				else
 					next = shift;
 			end
@@ -71,6 +57,13 @@ module control(input logic clearA_loadB, reset, execute, Clk, bout,
 			sub : begin
 				//@@add code here
 				//can use XOR/XNOR to flip the bits
+			end
+
+			done : begin
+				Shift_en <= 1'b1;
+				Sub_en <= 1'b0;
+				clr_ld <= 1'b0;
+				next = start;
 			end
 
 			default: ;
