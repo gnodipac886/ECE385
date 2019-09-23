@@ -1,4 +1,5 @@
 module control(input logic clearA_loadB, reset, execute, Clk, bout,
+				input logic [8:0] mand
 				output logic Shift_en, resetA, resetB, loadA, loadB);
 	enum logic [1:0] {start, add, shift, sub} state, next;
 
@@ -69,21 +70,46 @@ module control(input logic clearA_loadB, reset, execute, Clk, bout,
 
 			sub : begin
 				//@@add code here
+				//can use XOR/XNOR to flip the bits
 			end
 
 			default: ;
 		endcase
 	end
+endmodule 
 
+
+module multiplier();
 	logic shoutA;
 	logic [8:0] doutA, sumA;
 	logic [7:0] doutB;
 
-	carry_select_adder_9bit adder1(.A(), .B(), 
-								   .Sum(.sumA), .CO());
-	shift_reg_9bit regA(.clk(Clk), .reset(resetA), .load(loadA), .shift_en(Shift_en), .shift_in(), .din(sumA), 
-						.shift_out(shoutA), .dout(doutA)); //what do we do with this empty connection?
-	shift_reg_8bit regB(.clk(Clk), .reset(resetB), .load(loadB), .shift_en(Shift_en), .shift_in(shoutA), .din(), 
-						.shift_out(bout), .dout(doutB)); //^^^^^^
+	carry_select_adder_9bit adder1(.A(mand), 
+								   .B(), 
+								   .Sum(.sumA), 
+								   .CO());
+
+	shift_reg_9bit regA(
+						.clk(Clk), 
+						.reset(resetA), 
+						.load(loadA), 
+						.shift_en(Shift_en), 
+						.shift_in(), 
+						.din(sumA), 
+						.shift_out(shoutA), 
+						.dout(doutA)
+						); 
+						//what do we do with this empty connection?
+
+	shift_reg_8bit regB(
+						.clk(Clk), 
+						.reset(resetB), 
+						.load(loadB), 
+						.shift_en(Shift_en), 
+						.shift_in(shoutA), 
+						.din(), 
+						.shift_out(bout), 
+						.dout(doutB)
+						); //^^^^^^
 
 endmodule
