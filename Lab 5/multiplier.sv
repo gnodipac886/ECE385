@@ -3,45 +3,59 @@ module multiplier(input logic [7:0] mand,
 				  output logic [6:0] AhexU, AhexL, BhexU, BhexL, 
 				  output logic [7:0] Aval, Bval, 
 				  output logic X);
-	logic shoutA;
-	logic [8:0] doutA, sumA;
-	logic [7:0] doutB;
+	logic shoutA, shoutB, XtoA, addsub_en, subtraction_en, clear_load;
+	logic shft_en;
+	logic [8:0] sumA;
+	logic [7:0] doutA, doutB;
 
-	control ctr(.clearA_loadB(ClearA_loadB), 
+	control ctr(
+				.clearA_loadB(ClearA_loadB), 
 				.reset(Reset), 
 				.execute(Execute), 
 				.clk(Clk), 
-				.bout(), 
-				.Shift_en(), 
-				.Sub_en(), 
-				.clr_ld()
+				.bout(shoutB),
+
+				.Shift_en(shft_en), 
+				.Sub_en(subtraction_en), 
+				.clr_ld(clear_load),
+				.addsub(addsub_en)
 				);
 
-	carry_select_addsub_9bit adder1(.A({, mand}), 
-								   .B(), //the value in register A
-								   .Sum(.sumA), 
-								   .CO());
+	carry_select_addsub_9bit adder1(
+									.sub_en(subtraction_en),
+									.A({mand[7], mand}), 
+								   	.B({doutA[7], doutA}), //the value in register A
+								   	.Sum(sumA), 
+								   	.CO()
+								   	);
 
-	shift_reg_9bit regA(
+	flip_flop_mod X(
+					.clk(Clk), 
+					.din(sumA[8]),
+					.load(addsub_en),
+					.reset(clear_load | Reset),
+					.dout(XtoA)
+					);
+
+	shift_reg_8bit regA(
 						.clk(Clk), 
-						.reset(resetA), 
-						.load(loadA), 
-						.shift_en(Shift_en), 
-						.shift_in(), 
-						.din(sumA), 
+						.reset(clear_load | Reset), 
+						.load(addsub_en), 
+						.shift_en(shft_en), 
+						.shift_in(XtoA), 
+						.din(sumA[7:0]), 
 						.shift_out(shoutA), 
-						.dout(doutA)
+						.dout(doutA[7:0])
 						); 
-						//what do we do with this empty connection?
 
 	shift_reg_8bit regB(
 						.clk(Clk), 
-						.reset(resetB), 
-						.load(ClearA_loadB), 
-						.shift_en(Shift_en), 
+						.reset(Reset), 
+						.load(clear_load), 
+						.shift_en(shft_en), 
 						.shift_in(shoutA), 
 						.din(mand), 
-						.shift_out(bout), 
+						.shift_out(shoutB), 
 						.dout(doutB)
-						); //^^^^^^
+						); 
 endmodule

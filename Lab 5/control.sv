@@ -69,13 +69,6 @@ module control(input logic clearA_loadB, reset, execute, clk, bout,
 				addsub <= 1'b1;
 			end
 
-			/*done : begin
-				Shift_en <= 1'b0;
-				Sub_en <= 1'b0;
-				clr_ld <= 1'b0;
-				next = restart;
-			end*/
-
 			restart : begin
 				count = 3'b000;
 				if(clearA_loadB == 1) begin
