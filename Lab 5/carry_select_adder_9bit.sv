@@ -14,7 +14,7 @@ module carry_select_addsub_9bit
     always_comb begin
     	if(sub_en == 1) begin
     		B = ~B;
-    		B = B + 1'b000000001;
+    		B = B + 9'b000000001;
     end 
 
 	logic C1;
