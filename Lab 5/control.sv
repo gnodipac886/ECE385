@@ -1,6 +1,6 @@
 module control(input logic clearA_loadB, reset, execute, clk, bout,
-				output logic Shift_en, Sub_en, clr_ld);
-	enum logic [2:0] {start, add, shift, sub, done} state, next;
+				output logic Shift_en, Sub_en, clr_ld, addsub);
+	enum logic [2:0] {start, add, shift, sub, restart} state, next;
 
 	logic [2:0] count;
 
@@ -22,11 +22,13 @@ module control(input logic clearA_loadB, reset, execute, clk, bout,
 					Shift_en <= 1'b0;
 					Sub_en <= 1'b0;
 					clr_ld <= 1'b1;
+					addsub <= 1'b0;
 				end
 				else if (execute == 1) begin
 					Shift_en <= 1'b0;
 					Sub_en <= 1'b0;
 					clr_ld <= 1'b0;
+					addsub <= 1'b0;
 					if(bout == 1)
 						next = add;
 					else
@@ -36,6 +38,10 @@ module control(input logic clearA_loadB, reset, execute, clk, bout,
 
 			add : begin
 				//@@add code here
+				Shift_en <= 1'b0;
+				Sub_en <= 1'b0;
+				clr_ld <= 1'b0;
+				addsub <= 1'b1;
 			end
 
 			shift : begin
@@ -43,27 +49,51 @@ module control(input logic clearA_loadB, reset, execute, clk, bout,
 				Shift_en <= 1'b1;
 				Sub_en <= 1'b0;
 				clr_ld <= 1'b0;
+				addsub <= 1'b0;
 				count = count + 1;
 				if(bout == 1 && count == 3'b111)
 					next = sub;
 				else if (bout == 1 && count != 3'b111)
 					next = add;
-				else if (bout == 0 && count == 3'b111)
-					next = done;
+				else if (count == 3'b000)
+					next = restart;
 				else
 					next = shift;
 			end
 
 			sub : begin
 				//@@add code here
-				//can use XOR/XNOR to flip the bits
+				Shift_en <= 1'b0;
+				Sub_en <= 1'b1;
+				clr_ld <= 1'b0;
+				addsub <= 1'b1;
 			end
 
-			done : begin
-				Shift_en <= 1'b1;
+			/*done : begin
+				Shift_en <= 1'b0;
 				Sub_en <= 1'b0;
 				clr_ld <= 1'b0;
-				next = start;
+				next = restart;
+			end*/
+
+			restart : begin
+				count = 3'b000;
+				if(clearA_loadB == 1) begin
+					Shift_en <= 1'b0;
+					Sub_en <= 1'b0;
+					clr_ld <= 1'b1;
+					addsub <= 1'b0;
+				end
+				else if (execute == 1) begin
+					Shift_en <= 1'b0;
+					Sub_en <= 1'b0;
+					clr_ld <= 1'b1;
+					addsub <= 1'b0;
+					if(bout == 1)
+						next = add;
+					else
+						next = shift;
+				end
 			end
 
 			default: ;
