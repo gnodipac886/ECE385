@@ -15,6 +15,7 @@ module carry_select_addsub_9bit
     	if(sub_en == 1) begin
     		B = ~B;
     		B = B + 9'b000000001;
+    	end
     end 
 
 	logic C1;
