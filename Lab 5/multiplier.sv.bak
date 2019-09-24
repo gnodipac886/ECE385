@@ -71,7 +71,7 @@ module multiplier(input logic [7:0] mand,
 	 Bval = doutB;
 	end
 	
-	//sync button_sync[2:0] (Clk, {}
+	sync button_sync[2:0] (Clk, {}
 	
 	
 						
