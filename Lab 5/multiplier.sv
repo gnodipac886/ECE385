@@ -29,11 +29,7 @@ module multiplier(input logic [7:0] mand,
 								   	.CO()
 								   	);
 
-<<<<<<< HEAD
-	flip_flop_mod regX(
-=======
 	flip_flop_mod reg_X(
->>>>>>> 41d6fbe693c084d0918aa7f1541ce494b1b5fc72
 					.clk(Clk), 
 					.din(sumA[8]),
 					.load(addsub_en),
