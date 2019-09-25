@@ -1,6 +1,6 @@
-module shift_reg_8bit(	input logic clk, reset, load, shift_en, shift_in
-						input logic [7:0] din
-						output logic shift_out
+module shift_reg_8bit(	input logic clk, reset, load, shift_en, shift_in,
+						input logic [7:0] din,
+						output logic shift_out,
 						output logic [7:0] dout);
 	always_ff @ (posedge clk)
 	begin

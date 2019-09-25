@@ -21,7 +21,7 @@ module multiplier(input logic [7:0] mand,
 				.addsub(addsub_en)
 				);
 
-	carry_select_addsub_9bit adder1(
+	carry_select_adder_9bit adder1(
 									.sub_en(subtraction_en),
 									.A({mand[7], mand}), 
 								   	.B({doutA[7], doutA}), //the value in register A
@@ -29,7 +29,7 @@ module multiplier(input logic [7:0] mand,
 								   	.CO()
 								   	);
 
-	flip_flop_mod X(
+	flip_flop_mod reg_X(
 					.clk(Clk), 
 					.din(sumA[8]),
 					.load(addsub_en),
@@ -62,7 +62,7 @@ module multiplier(input logic [7:0] mand,
 	HexDriver hexUA(.In0(doutA[7:4]), .Out0(AhexU));
    HexDriver hexUB(.In0(doutB[7:4]), .Out0(BhexU));	
 	HexDriver hexLA(.In0(doutA[3:0]), .Out0(AhexL));
-	HexDriver hexLA(.In0(doutB[3:0]), .Out0(BhexL));
+	HexDriver hexLB(.In0(doutB[3:0]), .Out0(BhexL));
 	
 	always_comb begin
 	 Aval = doutA;
