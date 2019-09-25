@@ -1,5 +1,5 @@
 	module control(input logic clearA_loadB, reset, execute, clk, bout,
-				output logic Shift_en, Sub_en, clr_ld, addsub);
+				output logic Shift_en, Sub_en, clr_ld, addsub, clearA);
 	enum logic [4:0] {start, load,
 					  add1, shift1,
 					  add2, shift2,
@@ -9,7 +9,7 @@
 					  add6, shift6,
 					  add7, shift7,
 					  add8, shift8,
-					  restart, clear,
+					  restart, clear
 					  } state, next;
 
 	always_ff @(posedge clk or posedge reset) begin
@@ -49,7 +49,7 @@
 			shift6 	: 	next = add7;
 			
 			add7	: 	next = shift7;
-			shift7 	: 	next = ad8;
+			shift7 	: 	next = add8;
 			
 			add8	: 	next = shift8;
 			shift8 	: 	next = restart;
@@ -68,6 +68,7 @@
 				Sub_en = 1'b0;
 				clr_ld = 1'b0;
 				addsub = 1'b0;
+				clearA = 1'b0;
 			end 
 
 			load: begin
@@ -75,6 +76,7 @@
 				Sub_en = 1'b0;
 				clr_ld = 1'b1;
 				addsub = 1'b0;
+				clearA = 1'b0;
 			end 
 
 			add1,
@@ -87,18 +89,25 @@
 				Shift_en = 1'b0;
 				Sub_en = 1'b0;
 				clr_ld = 1'b0;
-				addsub = 1'b1;
+				clearA = 1'b0;
+				if(bout)
+					addsub = 1'b1;
+				else
+					addsub = 1'b0;
 			end 
 
 			add8 : begin
 				Shift_en = 1'b0;
 				clr_ld = 1'b0;
-				addsub = 1'b1;
-				if (bout)
+				clearA = 1'b0;
+				if (bout) begin
+					addsub = 1'b1;
 					Sub_en = 1'b1;
-				else
+				end 
+				else begin
+					addsub = 1'b0;
 					Sub_en = 1'b0;
-
+				end
 			end
 
 			shift1,
@@ -113,19 +122,22 @@
 				Sub_en = 1'b0;
 				clr_ld = 1'b0;
 				addsub = 1'b0;
+				clearA = 1'b0;
 			end
 			restart : begin
 				Shift_en = 1'b0;
 				Sub_en = 1'b0;
 				clr_ld = 1'b0;
 				addsub = 1'b0;
+				clearA = 1'b0;
 			end
 
 			clear : begin
 				Shift_en = 1'b0;
 				Sub_en = 1'b0;
-				clr_ld = 1'b1;
+				clr_ld = 1'b0;
 				addsub = 1'b0;
+				clearA = 1'b1;
 
 			end
 

@@ -3,7 +3,7 @@ module multiplier(input logic [7:0] mand,
 				  output logic [6:0] AhexU, AhexL, BhexU, BhexL, 
 				  output logic [7:0] Aval, Bval, 
 				  output logic X);
-	logic shoutA, shoutB, XtoA, addsub_en, subtraction_en, clear_load;
+	logic shoutA, shoutB, XtoA, addsub_en, subtraction_en, clear_load, clrA;
 	logic shft_en;
 	logic [8:0] sumA;
 	logic [7:0] doutA, doutB;
@@ -18,10 +18,11 @@ module multiplier(input logic [7:0] mand,
 				.Shift_en(shft_en), 
 				.Sub_en(subtraction_en), 
 				.clr_ld(clear_load),
-				.addsub(addsub_en)
+				.addsub(addsub_en),
+				.clearA(clrA)
 				);
 
-	carry_select_adder_9bit adder1(
+	carry_select_adder_9bit adder_1(
 									.sub_en(subtraction_en),
 									.A({mand[7], mand}), 
 								   	.B({doutA[7], doutA}), //the value in register A
@@ -33,13 +34,13 @@ module multiplier(input logic [7:0] mand,
 					.clk(Clk), 
 					.din(sumA[8]),
 					.load(addsub_en),
-					.reset(clear_load | Reset),
+					.reset(clear_load | Reset | clrA),
 					.dout(XtoA)
 					);
 
 	shift_reg_8bit regA(
 						.clk(Clk), 
-						.reset(clear_load | Reset), 
+						.reset(clear_load | Reset | clrA), 
 						.load(addsub_en), 
 						.shift_en(shft_en), 
 						.shift_in(XtoA), 
@@ -56,7 +57,7 @@ module multiplier(input logic [7:0] mand,
 						.shift_in(shoutA), 
 						.din(mand), 
 						.shift_out(shoutB), 
-						.dout(doutB)
+						.dout(doutB[7:0])
 						); 
 
 	HexDriver hexUA(.In0(doutA[7:4]), .Out0(AhexU));

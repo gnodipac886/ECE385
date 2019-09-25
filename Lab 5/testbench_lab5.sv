@@ -40,25 +40,36 @@ initial begin : TEST_VECTORS
 
 #2   Reset =1;
 
-#2   mand = 8'h7;
+#2   Reset = 0;
+
+#2   mand = 8'hC5;
 
 #2   ClearA_loadB = 0;
 
 #2   ClearA_loadB = 1;
 
-#2   mand = 8'hFFC5;
+#2   ClearA_loadB = 0;
+
+#2   mand = 8'h07;
 
 #2   Execute = 0;
 
 #2   Execute = 1;
 
-#60  expec = (8'hFFC5 * 8'h7);
+#2   Execute = 0;
+
+#10  Execute = 0;
+
+#50   Execute = 1;
+
+#2   Execute = 0;
+
+#60  expec = (8'h07*8'hC5  );
 			if ({Aval, Bval} != expec)
 					erroc++;
 					
-#2   Reset = 0;
 
-#2   Reset = 1;
+					
 
  end
  
