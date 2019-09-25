@@ -1,5 +1,5 @@
 module multiplier(input logic [7:0] mand, 
-				  input logic Clk, Reset, Execute, ClearA_loadB,
+				  input logic Clk, Reset_h, Execute_h, ClearA_loadB_h,
 				  output logic [6:0] AhexU, AhexL, BhexU, BhexL, 
 				  output logic [7:0] Aval, Bval, 
 				  output logic X);
@@ -7,6 +7,8 @@ module multiplier(input logic [7:0] mand,
 	logic shft_en;
 	logic [8:0] sumA;
 	logic [7:0] doutA, doutB;
+	
+	sync button_s [2:0] (Clk,{~Reset_h,Execute_h,ClearA_loadB_h},{Reset,Execute,ClearA_loadB});
 
 	control ctr(
 				.clearA_loadB(ClearA_loadB), 
