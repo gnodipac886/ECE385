@@ -1,18 +1,12 @@
 module multiplier(input logic [7:0] mand, 
-				  input logic Clk, Reset_h, Execute_h, ClearA_loadB_h,
+				  input logic Clk, Reset, Execute, ClearA_loadB,
 				  output logic [6:0] AhexU, AhexL, BhexU, BhexL, 
 				  output logic [7:0] Aval, Bval, 
 				  output logic X);
-	logic shoutA, shoutB, XtoA, addsub_en, subtraction_en, clear_load, clrA, Reset, ClearA_loadB, Execute;
+	logic shoutA, shoutB, XtoA, addsub_en, subtraction_en, clear_load, clrA;
 	logic shft_en;
 	logic [8:0] sumA;
 	logic [7:0] doutA, doutB;
-	
-	always_comb begin
-		Reset = ~Reset_h;
-		ClearA_loadB = ~ClearA_loadB_h;
-		Execute = ~Execute_h;
-	end
 
 	control ctr(
 				.clearA_loadB(ClearA_loadB), 
