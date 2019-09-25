@@ -5,16 +5,18 @@ module control(input logic clearA_loadB, reset, execute, clk, bout,
 	logic [2:0] count;
 
 	always_ff @(posedge clk or posedge reset) begin
-		if(reset) begin
+		if(reset)
 			state <= start;
 		else
 			state <= next;
 	end
 
 	always_comb begin
-		case (state)
-			next = state;
-			count = 3'b000;
+	     next = state;
+		  count = 3'b000;
+
+		unique case (state)
+			
 
 			start : begin
 				count = 3'b000;
@@ -89,7 +91,6 @@ module control(input logic clearA_loadB, reset, execute, clk, bout,
 				end
 			end
 
-			default: ;
 		endcase
 	end
 endmodule 

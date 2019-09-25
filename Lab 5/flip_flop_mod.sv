@@ -1,4 +1,4 @@
-module flip_flop_mod(input logic clk, din, load, reset
+module flip_flop_mod(input logic clk, din, load, reset,
 					output logic dout);
 
 	logic real_din;
