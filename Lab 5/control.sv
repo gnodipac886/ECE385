@@ -9,7 +9,8 @@
 					  add6, shift6,
 					  add7, shift7,
 					  add8, shift8,
-					  restart, clear
+					  restart, clear,
+					  hold
 					  } state, next;
 
 	always_ff @(posedge clk or posedge reset) begin
@@ -55,9 +56,12 @@
 			shift8 	: 	next = restart;
 
 			restart : 	if(~execute)
-							next = start;
+							next = hold;
+							
+			hold 	: 	if(execute)
+							next = clear;
 
-			clear 	: 	if(execute)
+			clear 	: 	
 							next = add1;
 		endcase
 	end 
@@ -139,6 +143,15 @@
 				clr_ld <= 1'b0;
 				addsub <= 1'b0;
 				clearA <= 1'b1;
+
+			end
+			
+			hold : begin
+				Shift_en <= 1'b0;
+				Sub_en <= 1'b0;
+				clr_ld <= 1'b0;
+				addsub <= 1'b0;
+				clearA <= 1'b0;
 
 			end
 
