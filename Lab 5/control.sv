@@ -54,10 +54,11 @@
 			add8	: 	next = shift8;
 			shift8 	: 	next = restart;
 
-			restart : 	if(execute)
-							next = clear;
+			restart : 	if(~execute)
+							next = start;
 
-			clear 	: 	next = add1;
+			clear 	: 	if(execute)
+							next = add1;
 		endcase
 	end 
 

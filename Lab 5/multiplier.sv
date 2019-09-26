@@ -13,6 +13,9 @@ module multiplier(input logic [7:0] mand,
 	sync s2(.Clk(Clk),.d(~Execute_h),.q(Execute));
 	sync s3(.Clk(Clk),.d(~ClearA_loadB_h),.q(ClearA_loadB));
 	
+	// assign Reset = ~Reset_h;
+	// assign ClearA_loadB = ~ClearA_loadB_h;
+	// assign Execute = ~Execute_h;
 
 	control ctr(
 				.clearA_loadB(ClearA_loadB), 

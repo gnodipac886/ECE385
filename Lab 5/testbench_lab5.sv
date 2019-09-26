@@ -43,7 +43,7 @@ initial begin : TEST_VECTORS
 
 #2   mand = 8'hC5;
 
-#10   ClearA_loadB_h = 1;
+#2   ClearA_loadB_h = 1;
 
 #2   ClearA_loadB_h = 0;
 #2   ClearA_loadB_h = 1;
