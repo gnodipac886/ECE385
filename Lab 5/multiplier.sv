@@ -8,7 +8,11 @@ module multiplier(input logic [7:0] mand,
 	logic [8:0] sumA;
 	logic [7:0] doutA, doutB;
 	
-	sync button_s [2:0] (Clk,{~Reset_h,Execute_h,ClearA_loadB_h},{Reset,Execute,ClearA_loadB});
+	
+	sync s1(.Clk(Clk),.d(~Reset_h),.q(Reset));
+	sync s2(.Clk(Clk),.d(~Execute_h),.q(Execute));
+	sync s3(.Clk(Clk),.d(~ClearA_loadB_h),.q(ClearA_loadB));
+	
 
 	control ctr(
 				.clearA_loadB(ClearA_loadB), 

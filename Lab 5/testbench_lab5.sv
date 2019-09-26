@@ -6,7 +6,7 @@ timeprecision 1ns;
 
 logic Clk = 0;
 
-logic Reset, Execute, ClearA_loadB;
+logic Reset_h, Execute_h, ClearA_loadB_h;
 
 logic [7:0] mand;
 
@@ -36,33 +36,30 @@ initial begin : CLOCK_INITIALIZATION
 	
 initial begin : TEST_VECTORS
 
-     Reset = 0;
+     Reset_h = 1;
 
-#2   Reset =1;
+#2   Reset_h =0;
 
-#2   Reset = 0;
+#2   Reset_h = 1;
+
+
+
+
 
 #2   mand = 8'hC5;
 
-#2   ClearA_loadB = 0;
+#10   ClearA_loadB_h = 1;
 
-#2   ClearA_loadB = 1;
+#2   ClearA_loadB_h = 0;
+#2   ClearA_loadB_h = 1;
 
-#2   ClearA_loadB = 0;
+#10   mand = 8'h07;
 
-#2   mand = 8'h07;
+#2   Execute_h = 1;
 
-#2   Execute = 0;
+#2   Execute_h = 0;
 
-#2   Execute = 1;
-
-#2   Execute = 0;
-
-#10  Execute = 0;
-
-#50   Execute = 1;
-
-#2   Execute = 0;
+#2   Execute_h = 1;
 
 #60  expec = (8'h07*8'hC5  );
 			if ({Aval, Bval} != expec)
