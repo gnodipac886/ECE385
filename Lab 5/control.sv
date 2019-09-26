@@ -64,19 +64,19 @@
 	always_comb begin
 		case(state)
 			start: begin
-				Shift_en = 1'b0;
-				Sub_en = 1'b0;
-				clr_ld = 1'b0;
-				addsub = 1'b0;
-				clearA = 1'b0;
+				Shift_en <= 1'b0;
+				Sub_en <= 1'b0;
+				clr_ld <= 1'b0;
+				addsub <= 1'b0;
+				clearA <= 1'b0;
 			end 
 
 			load: begin
-				Shift_en = 1'b0;
-				Sub_en = 1'b0;
-				clr_ld = 1'b1;
-				addsub = 1'b0;
-				clearA = 1'b0;
+				Shift_en <= 1'b0;
+				Sub_en <= 1'b0;
+				clr_ld <= 1'b1;
+				addsub <= 1'b0;
+				clearA <= 1'b0;
 			end 
 
 			add1,
@@ -86,27 +86,27 @@
 			add5,
 			add6,
 			add7 : begin
-				Shift_en = 1'b0;
-				Sub_en = 1'b0;
-				clr_ld = 1'b0;
-				clearA = 1'b0;
+				Shift_en <= 1'b0;
+				Sub_en <= 1'b0;
+				clr_ld <= 1'b0;
+				clearA <= 1'b0;
 				if(bout)
-					addsub = 1'b1;
+					addsub <= 1'b1;
 				else
-					addsub = 1'b0;
+					addsub <= 1'b0;
 			end 
 
 			add8 : begin
-				Shift_en = 1'b0;
-				clr_ld = 1'b0;
-				clearA = 1'b0;
+				Shift_en <= 1'b0;
+				clr_ld <= 1'b0;
+				clearA <= 1'b0;
 				if (bout) begin
-					addsub = 1'b1;
-					Sub_en = 1'b1;
+					addsub <= 1'b1;
+					Sub_en <= 1'b1;
 				end 
 				else begin
-					addsub = 1'b0;
-					Sub_en = 1'b0;
+					addsub <= 1'b0;
+					Sub_en <= 1'b0;
 				end
 			end
 
@@ -118,26 +118,26 @@
 			shift6,
 			shift7,
 			shift8 : begin
-				Shift_en = 1'b1;
-				Sub_en = 1'b0;
-				clr_ld = 1'b0;
-				addsub = 1'b0;
-				clearA = 1'b0;
+				Shift_en <= 1'b1;
+				Sub_en <= 1'b0;
+				clr_ld <= 1'b0;
+				addsub <= 1'b0;
+				clearA <= 1'b0;
 			end
 			restart : begin
-				Shift_en = 1'b0;
-				Sub_en = 1'b0;
-				clr_ld = 1'b0;
-				addsub = 1'b0;
-				clearA = 1'b0;
+				Shift_en <= 1'b0;
+				Sub_en <= 1'b0;
+				clr_ld <= 1'b0;
+				addsub <= 1'b0;
+				clearA <= 1'b0;
 			end
 
 			clear : begin
-				Shift_en = 1'b0;
-				Sub_en = 1'b0;
-				clr_ld = 1'b0;
-				addsub = 1'b0;
-				clearA = 1'b1;
+				Shift_en <= 1'b0;
+				Sub_en <= 1'b0;
+				clr_ld <= 1'b0;
+				addsub <= 1'b0;
+				clearA <= 1'b1;
 
 			end
 

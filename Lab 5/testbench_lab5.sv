@@ -12,10 +12,9 @@ logic [7:0] mand;
 
 logic [7:0] Aval, Bval;
 
-logic X; //
-
 logic [6:0] AhexU, AhexL, BhexU, BhexL;
 
+logic X;
 
 logic [15:0] expec;  // expected value use to check
 
@@ -40,14 +39,25 @@ initial begin : TEST_VECTORS
 
 #2   Reset_h =0;
 
+<<<<<<< HEAD
 #2   Reset_h = 1;
+=======
+#2   Execute_h = 1;
+>>>>>>> 7b6cac58010d7c905872f5d0dc6c14a1c4a809fe
 
 
+<<<<<<< HEAD
 
 
+=======
+#2   ClearA_loadB_h = 0;
+
+#2   ClearA_loadB_h = 1;
+>>>>>>> 7b6cac58010d7c905872f5d0dc6c14a1c4a809fe
 
 #2   mand = 8'hC5;
 
+<<<<<<< HEAD
 #10   ClearA_loadB_h = 1;
 
 #2   ClearA_loadB_h = 0;
@@ -60,6 +70,15 @@ initial begin : TEST_VECTORS
 #2   Execute_h = 0;
 
 #2   Execute_h = 1;
+=======
+#2   Execute_h = 0;
+
+#2   Execute_h = 1;
+
+//#10  Execute_h = 0;
+
+//#50   Execute_h = 1;
+>>>>>>> 7b6cac58010d7c905872f5d0dc6c14a1c4a809fe
 
 #60  expec = (8'h07*8'hC5  );
 			if ({Aval, Bval} != expec)

@@ -3,16 +3,22 @@ module multiplier(input logic [7:0] mand,
 				  output logic [6:0] AhexU, AhexL, BhexU, BhexL, 
 				  output logic [7:0] Aval, Bval, 
 				  output logic X);
-	logic shoutA, shoutB, XtoA, addsub_en, subtraction_en, clear_load, clrA;
+	logic shoutA, shoutB, XtoA, addsub_en, subtraction_en, clear_load, clrA, Reset, ClearA_loadB, Execute;
 	logic shft_en;
 	logic [8:0] sumA;
 	logic [7:0] doutA, doutB;
 	
+<<<<<<< HEAD
 	
 	sync s1(.Clk(Clk),.d(~Reset_h),.q(Reset));
 	sync s2(.Clk(Clk),.d(~Execute_h),.q(Execute));
 	sync s3(.Clk(Clk),.d(~ClearA_loadB_h),.q(ClearA_loadB));
 	
+=======
+
+	sync button_s [2:0] (Clk,{~Reset_h,~Execute_h,~ClearA_loadB_h},{Reset,Execute,ClearA_loadB});
+
+>>>>>>> 7b6cac58010d7c905872f5d0dc6c14a1c4a809fe
 
 	control ctr(
 				.clearA_loadB(ClearA_loadB), 
