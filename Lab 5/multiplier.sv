@@ -8,15 +8,9 @@ module multiplier(input logic [7:0] mand,
 	logic [8:0] sumA;
 	logic [7:0] doutA, doutB;
 	
-<<<<<<< HEAD
-	always_comb begin
-		Reset = ~Reset_h;
-		ClearA_loadB = ~ClearA_loadB_h;
-		Execute = ~Execute_h;
-	end
-=======
-	sync button_s [2:0] (Clk,{~Reset_h,Execute_h,ClearA_loadB_h},{Reset,Execute,ClearA_loadB});
->>>>>>> refs/remotes/origin/master
+
+	sync button_s [2:0] (Clk,{~Reset_h,~Execute_h,~ClearA_loadB_h},{Reset,Execute,ClearA_loadB});
+
 
 	control ctr(
 				.clearA_loadB(ClearA_loadB), 

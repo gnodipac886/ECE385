@@ -12,10 +12,9 @@ logic [7:0] mand;
 
 logic [7:0] Aval, Bval;
 
-logic X; //
-
 logic [6:0] AhexU, AhexL, BhexU, BhexL;
 
+logic X;
 
 logic [15:0] expec;  // expected value use to check
 
@@ -36,9 +35,11 @@ initial begin : CLOCK_INITIALIZATION
 	
 initial begin : TEST_VECTORS
 
-     Reset_h = 0;
+     Reset_h = 1;
 
-#2   Reset_h =1;
+#2   Reset_h =0;
+
+#2   Execute_h = 1;
 
 #2   mand = 8'hC5;
 
