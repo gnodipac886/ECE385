@@ -41,14 +41,14 @@ initial begin : TEST_VECTORS
 
 #2   Reset_h = 1;
 
-#2   mand = 8'hC5;
+#2   mand = 8'hFE;
 
 #2   ClearA_loadB_h = 1;
 
 #2   ClearA_loadB_h = 0;
 #2   ClearA_loadB_h = 1;
 
-#10   mand = 8'h07;
+#10   mand = 8'hFE;
 
 #2   Execute_h = 1;
 
