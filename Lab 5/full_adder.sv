@@ -1,5 +1,5 @@
 module full_adder(input logic a, b, cin, 
-						output logic  sum, cout);
+				  output logic  sum, cout);
 
 always_comb
 begin
