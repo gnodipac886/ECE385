@@ -1,15 +1,15 @@
-module shift_reg_8bit(	input logic clk, reset, load, shift_en, shift_in
-						input logic [7:0] din
+module reg_16(	input logic clk, reset, load, shift_en, shift_in
+						input logic [15:0] din
 						output logic shift_out
-						output logic [7:0] dout);
+						output logic [15:0] dout);
 	always_ff @ (posedge clk)
 	begin
 		if(reset)
-			dout <= 8'h00;
+			dout <= 16'h0000;
 		else if (load)
 			dout <= din;
 		else if(shift_en)
-			dout <= {shift_in, dout[7:1]};
+			dout <= {shift_in, dout[15:1]};
 	end
 
 	always_comb
