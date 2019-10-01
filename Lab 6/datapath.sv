@@ -9,20 +9,6 @@ module datapath (
 					output logic [11:0] LED,
 				);
 
-	//logic SR2;
-	//logic [15:0] sext5out, sext6out, sext9out, sext11out;
-
-	// SEXT5 ext5(.in(IR_out[4:0]), .out(sext5out));
-	// SEXT5 ext6(.in(IR_out[5:0]), .out(sext6out));
-	// SEXT5 ext9(.in(IR_out[8:0]), .out(sext9out));
-	// SEXT5 ext11(.in(IR_out[10:0]), .out(sext11out));
-
-
-
-	// always_comb begin
-	// 	SR2 = IR_out[2:0];
-	// end
-
 	logic 	[15:0] 	BUS,
 					IR_out_wire,
 					MDR_out_wire,
