@@ -4,10 +4,11 @@ module datapath (
 					input logic 		MARMUX, ADDR1MUX, SR2MUX, MIO_EN, 
 					input logic  [1 :0]	PCMUX, DRMUX, ADDR2MUX, SR1MUX, ALUK, 
 					input logic  [15:0]	MDR_in,
-					output logic [15:0]	MDR_out, MAR_out, IR_out,
-					output logic 		BEN,
-					output logic [11:0] LED,
+					output logic [15:0]	MDR_out, MAR_out, IR_out //,
+//					output logic 		BEN,
+//					output logic [11:0] LED
 				);
+				
 
 	logic 	[15:0] 	BUS,
 					SR1OUT,
@@ -116,28 +117,32 @@ module datapath (
 					);
 
 	reg_16bit  IR(
-				.*, 
+				.clk(),
+				.reset(),	
 				.load(LD_IR), 
 				.din(BUS), 
 				.dout(IR_out_wire)
 				);
 
 	reg_16bit  MDR(
-				.*, 
+				.clk(),
+				.reset(), 
 				.load(LD_MDR), 
 				.din(mdrmux_out), 
 				.dout(MDR_out_wire)
 				);
 
 	reg_16bit  MAR(
-				.*, 
+				.clk(),
+				.reset(),	 
 				.load(LD_MAR), 
 				.din(BUS), 
 				.dout(MAR_out_wire)
 				);
 
 	reg_16bit  PC(
-				.*, 
+				.clk(),
+				.reset(),	 
 				.load(LD_PC), 
 				.din(pcmux_out), 
 				.dout(PC_out_wire)
@@ -149,4 +154,10 @@ module datapath (
 				.aluk(ALUK),
 				.ans(ALU_out)
 			  );
+
+	always_comb begin
+		MDR_out = MDR_out_wire;
+		MAR_out = MAR_out_wire;
+		IR_out = IR_out_wire;
+	end 
 endmodule 

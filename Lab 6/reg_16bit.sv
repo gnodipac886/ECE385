@@ -1,6 +1,6 @@
 module reg_16bit(	
 				input logic clk, reset, load,
-				input logic [15:0] din
+				input logic [15:0] din,
 				output logic [15:0] dout
 			  );
 	always_ff @ (posedge clk)
