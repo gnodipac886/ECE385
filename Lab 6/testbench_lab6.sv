@@ -14,6 +14,7 @@ logic CE, UB, LB, OE, WE;
 logic [19:0] ADDR;
 wire [15:0] Data;
 
+
 lab6_toplevel lab6_toplevel0(.*);
 
 always begin : CLOCK_GENERATION
@@ -29,11 +30,11 @@ initial begin : CLOCK_INITIALIZATION
 	
 initial begin : TEST_VECTORS
 
-     Reset_h = 1;
+     Reset = 1;
 
-#2   Reset_h =0;
+#2   Reset =0;
 
-#2   Reset_h = 1;
+#2   Reset = 1;
 
 #2   Run = 1;
 
