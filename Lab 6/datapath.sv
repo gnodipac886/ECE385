@@ -1,5 +1,5 @@
 module datapath (	
-					input logic 		GateMARMUX, GateMDR, GateALU, GatePC, Clk,
+					input logic 		GateMARMUX, GateMDR, GateALU, GatePC, Clk, Reset,
 					input logic 		LD_REG, LD_BEN, LD_CC, LD_IR, LD_MAR, LD_MDR, LD_PC, LD_LED,
 					input logic 		ADDR1MUX, SR2MUX, MIO_EN, 
 					input logic  [1 :0]	PCMUX, DRMUX, ADDR2MUX, SR1MUX, ALUK, 
@@ -112,7 +112,7 @@ module datapath (
 
 	reg_16bit  IR(
 				.clk(Clk),
-				.reset(),	
+				.reset(Reset),	
 				.load(LD_IR), 
 				.din(BUS), 
 				.dout(IR_out_wire)
@@ -120,7 +120,7 @@ module datapath (
 
 	reg_16bit  MDR(
 				.clk(Clk),
-				.reset(), 
+				.reset(Reset), 
 				.load(LD_MDR), 
 				.din(mdrmux_out), 
 				.dout(MDR_out_wire)
@@ -128,7 +128,7 @@ module datapath (
 
 	reg_16bit  MAR(
 				.clk(Clk),
-				.reset(),	 
+				.reset(Reset),	 
 				.load(LD_MAR), 
 				.din(BUS), 
 				.dout(MAR_out_wire)
@@ -136,7 +136,7 @@ module datapath (
 
 	reg_16bit  PC(
 				.clk(Clk),
-				.reset(),	 
+				.reset(Reset),	 
 				.load(LD_PC), 
 				.din(pcmux_out), 
 				.dout(PC_out_wire)
