@@ -29,6 +29,45 @@ datapath mydatapath(
 //					output logic 		BEN,
 //					output logic [11:0] LED
 				);
+
+ISDU myISDU(
+			.Clk(), 
+			.Reset(),
+			.Run(),
+			.Continue(),
+									
+				input logic[3:0]    Opcode, 
+				input logic         IR_5,
+				input logic         IR_11,
+				input logic         BEN,
+				  
+				output logic        LD_MAR,
+									LD_MDR,
+									LD_IR,
+									LD_BEN,
+									LD_CC,
+									LD_REG,
+									LD_PC,
+									LD_LED, // for PAUSE instruction
+									
+				output logic        GatePC,
+									GateMDR,
+									GateALU,
+									GateMARMUX,
+									
+				output logic [1:0]  PCMUX,
+				output logic        DRMUX,
+									SR1MUX,
+									SR2MUX,
+									ADDR1MUX,
+				output logic [1:0]  ADDR2MUX,
+									ALUK,
+				  
+				output logic        Mem_CE,
+									Mem_UB,
+									Mem_LB,
+									Mem_OE,
+									Mem_WE);
 test_memory my_test_memory(.Reset(~Reset), .I_O(Data), .A(ADDR), .*);
 
 endmodule
