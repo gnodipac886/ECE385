@@ -6,9 +6,9 @@ module REGFILE(
 				);
 
 	logic [7:0][15:0] outreg;
-	logic ld_reg0, 
+	logic ld_reg0;
 
-	always_ff @(posedge CLK) begin
+	always_ff @ (posedge CLK) begin
 		if(Reset) begin
 			 outreg[0] 	<=	16'h0000;
 			 outreg[1] 	<=	16'h0000;
@@ -29,6 +29,7 @@ module REGFILE(
 				3'b101	:	outreg[5] <= bus;
 				3'b110	:	outreg[6] <= bus;
 				3'b111	:	outreg[7] <= bus;
+				default: ;
 			endcase
 		end
 	end
@@ -43,6 +44,7 @@ module REGFILE(
 			3'b101	:	SR1_OUT = outreg[5];
 			3'b110	:	SR1_OUT = outreg[6];
 			3'b111	:	SR1_OUT = outreg[7];
+			default: ;
 		endcase
 
 		case (SR2)
@@ -54,6 +56,7 @@ module REGFILE(
 			3'b101	:	SR2_OUT = outreg[5];
 			3'b110	:	SR2_OUT = outreg[6];
 			3'b111	:	SR2_OUT = outreg[7];
+			default: ;
 		endcase
 	end
 endmodule

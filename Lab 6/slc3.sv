@@ -80,7 +80,7 @@ datapath d0 (/* Please fill in the signals.... */
                     .ADDR1MUX(ADDR1MUX), .SR2MUX(SR2MUX), .MIO_EN(MIO_EN), 
                     .PCMUX(PCMUX), .DRMUX(DRMUX), .ADDR2MUX(ADDR2MUX), .SR1MUX(SR1MUX), .ALUK(ALUK), 
                     .MDR_in(MDR_In),
-                    .MDR_out(MDR), .MAR_out(MAR), .IR_out(IR),.PC_out(PC)
+                    .MDR_out(MDR), .MAR_out(MAR), .IR_out(IR),.PC_out(PC),
                     .BEN(BEN)
                     );
 
