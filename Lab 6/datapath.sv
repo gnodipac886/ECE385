@@ -1,5 +1,5 @@
 module datapath (	
-					input logic 		GateMARMUX, GateMDR, GateALU, GatePC, Clk
+					input logic 		GateMARMUX, GateMDR, GateALU, GatePC, Clk,
 					input logic 		LD_REG, LD_BEN, LD_CC, LD_IR, LD_MAR, LD_MDR, LD_PC, LD_LED,
 					input logic 		ADDR1MUX, SR2MUX, MIO_EN, 
 					input logic  [1 :0]	PCMUX, DRMUX, ADDR2MUX, SR1MUX, ALUK, 
