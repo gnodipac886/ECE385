@@ -101,11 +101,13 @@ module datapath (
 								);
 
 	REGFILE reg_file(
+					.CLK(Clk),
+					.LDREG(LD_REG),
+					.Reset(Reset),
 					.bus(BUS), 
 					.DR(drmux_out),
 					.SR1(reg_file_sr1_in),
 					.SR2(IR_out_wire[2:0]),
-					.LDREG(LD_REG),
 					.SR1_OUT(SR1OUT),
 					.SR2_OUT(SR2OUT)
 					);
