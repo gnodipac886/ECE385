@@ -4,5 +4,12 @@ module REGFILE(
 				input logic 			LDREG,
 				output logic 	[15:0]	SR1_OUT, SR2_OUT
 				);
-
+	reg_16bit reg0(
+					.clk(),
+					.reset(),
+					.load(),
+					.din(),
+					.dout(),
+					);
+	
 endmodule

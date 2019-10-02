@@ -19,6 +19,16 @@ slc3 my_slc(.*);
 // Even though test memory is instantiated here, it will be synthesized into 
 // a blank module, and will not interfere with the actual SRAM.
 // Test memory is to play the role of physical SRAM in simulation.
+datapath mydatapath(	
+					.GateMARMUX(), .GateMDR(), .GateALU(), .GatePC(),
+					.LD_REG(), .LD_BEN(), .LD_CC(), .LD_IR(), .LD_MAR(), .LD_MDR(), .LD_PC(), .LD_LED(),
+					.MARMUX(), .ADDR1MUX(), .SR2MUX(), .MIO_EN(), 
+					.PCMUX(), .DRMUX(), .ADDR2MUX(), .SR1MUX(), .ALUK(), 
+					.MDR_in(),
+					.MDR_out(), .MAR_out(), .IR_out() //,
+//					output logic 		BEN,
+//					output logic [11:0] LED
+				);
 test_memory my_test_memory(.Reset(~Reset), .I_O(Data), .A(ADDR), .*);
 
 endmodule
