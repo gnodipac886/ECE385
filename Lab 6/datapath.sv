@@ -4,7 +4,7 @@ module datapath (
 					input logic 		ADDR1MUX, SR2MUX, MIO_EN, 
 					input logic  [1 :0]	PCMUX, DRMUX, ADDR2MUX, SR1MUX, ALUK, 
 					input logic  [15:0]	MDR_in,
-					output logic [15:0]	MDR_out, MAR_out, IR_out //,
+					output logic [15:0]	MDR_out, MAR_out, IR_out, PC_out //,
 //					output logic 		BEN,
 //					output logic [11:0] LED
 				);
@@ -153,5 +153,6 @@ module datapath (
 		MDR_out = MDR_out_wire;
 		MAR_out = MAR_out_wire;
 		IR_out = IR_out_wire;
+		PC_out = PC_out_wire;
 	end 
 endmodule 
