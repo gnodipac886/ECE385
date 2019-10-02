@@ -31,7 +31,7 @@ module datapath (
 	mux_21_dynamic mdrmux(
 						.sel(MIO_EN), 
 						.d0(BUS), 
-						.d1(), 
+						.d1(MDR_In), 
 						.out(mdrmux_out)
 						);
 

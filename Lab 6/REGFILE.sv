@@ -9,7 +9,7 @@ module REGFILE(
 					.reset(),
 					.load(),
 					.din(),
-					.dout(),
+					.dout()
 					);
 	
 endmodule
