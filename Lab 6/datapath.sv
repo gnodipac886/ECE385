@@ -1,7 +1,7 @@
 module datapath (	
-					input logic 		GateMARMUX, GateMDR, GateALU, GatePC,
+					input logic 		GateMARMUX, GateMDR, GateALU, GatePC, Clk
 					input logic 		LD_REG, LD_BEN, LD_CC, LD_IR, LD_MAR, LD_MDR, LD_PC, LD_LED,
-					input logic 		MARMUX, ADDR1MUX, SR2MUX, MIO_EN, 
+					input logic 		ADDR1MUX, SR2MUX, MIO_EN, 
 					input logic  [1 :0]	PCMUX, DRMUX, ADDR2MUX, SR1MUX, ALUK, 
 					input logic  [15:0]	MDR_in,
 					output logic [15:0]	MDR_out, MAR_out, IR_out //,
@@ -16,8 +16,7 @@ module datapath (
 					IR_out_wire,
 					MDR_out_wire,
 					MAR_out_wire, 
-					PC_out_wire,
-					marmux_out, 
+					PC_out_wire, 
 					mdrmux_out,
 					sr2mux_out,
 					addr1mux_out, 
@@ -27,12 +26,7 @@ module datapath (
 					reg_file_sr1_in,
 					ALU_out;
 
-	mux_21_dynamic marmux(
-						.sel(MARMUX), 
-						.d0({8'b0, IR_out_wire[7:0]}), //'
-						.d1(addr2mux_out + addr1mux_out), 
-						.out(marmux_out)
-						);
+
 
 	mux_21_dynamic mdrmux(
 						.sel(MIO_EN), 
@@ -99,7 +93,7 @@ module datapath (
 	*/
 	tristate_mux41 tristategate(
 								.sel({GateMDR, GateALU, GatePC, GateMARMUX}), 
-								.d0(MAR_out_wire), 
+								.d0(addr2mux_out + addr1mux_out), 
 								.d1(PC_out_wire), 
 								.d2(ALU_out), 
 								.d3(MDR_out_wire), 
@@ -117,7 +111,7 @@ module datapath (
 					);
 
 	reg_16bit  IR(
-				.clk(),
+				.clk(Clk),
 				.reset(),	
 				.load(LD_IR), 
 				.din(BUS), 
@@ -125,7 +119,7 @@ module datapath (
 				);
 
 	reg_16bit  MDR(
-				.clk(),
+				.clk(Clk),
 				.reset(), 
 				.load(LD_MDR), 
 				.din(mdrmux_out), 
@@ -133,7 +127,7 @@ module datapath (
 				);
 
 	reg_16bit  MAR(
-				.clk(),
+				.clk(Clk),
 				.reset(),	 
 				.load(LD_MAR), 
 				.din(BUS), 
@@ -141,7 +135,7 @@ module datapath (
 				);
 
 	reg_16bit  PC(
-				.clk(),
+				.clk(Clk),
 				.reset(),	 
 				.load(LD_PC), 
 				.din(pcmux_out), 
