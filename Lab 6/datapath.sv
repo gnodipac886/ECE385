@@ -4,8 +4,8 @@ module datapath (
 					input logic 		ADDR1MUX, SR2MUX, MIO_EN, 
 					input logic  [1 :0]	PCMUX, DRMUX, ADDR2MUX, SR1MUX, ALUK, 
 					input logic  [15:0]	MDR_in,
-					output logic [15:0]	MDR_out, MAR_out, IR_out, PC_out //,
-//					output logic 		BEN,
+					output logic [15:0]	MDR_out, MAR_out, IR_out, PC_out,
+					output logic 		BEN
 //					output logic [11:0] LED
 				);
 				
@@ -25,6 +25,8 @@ module datapath (
 					addr2mux_out,
 					reg_file_sr1_in,
 					ALU_out;
+
+	logic 			BEN_out_wire;
 
 
 
@@ -151,10 +153,18 @@ module datapath (
 				.ans(ALU_out)
 			  );
 
+	BEN myBEN(
+				.data_in(BUS),
+				.LD_CC(LD_CC), .LD_BEN(LD_BEN), .clk(Clk), .Reset(Reset),
+				.IR_in(IR_out_wire[11:9]),
+				.BEN_out(BEN_out_wire)
+			);
+
 	always_comb begin
 		MDR_out = MDR_out_wire;
 		MAR_out = MAR_out_wire;
 		IR_out = IR_out_wire;
 		PC_out = PC_out_wire;
+		BEN = BEN_out_wire;
 	end 
 endmodule 
