@@ -6,7 +6,7 @@ module datapath (
 					input logic  [15:0]	MDR_in,
 					output logic [15:0]	MDR_out, MAR_out, IR_out, PC_out,
 					output logic 		BEN
-//					output logic [11:0] LED
+					output logic [11:0] LED
 				);
 				
 
@@ -167,4 +167,11 @@ module datapath (
 		PC_out = PC_out_wire;
 		BEN = BEN_out_wire;
 	end 
+
+	always_ff @ (posedge Clk) begin
+		if (LD_LED)
+			LED <= IR_out[11:0];
+		else
+			LED <= 12'b0;
+	end
 endmodule 
