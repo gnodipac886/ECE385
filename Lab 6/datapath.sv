@@ -1,11 +1,11 @@
 module datapath (	
 					input logic 		GateMARMUX, GateMDR, GateALU, GatePC, Clk, Reset,
 					input logic 		LD_REG, LD_BEN, LD_CC, LD_IR, LD_MAR, LD_MDR, LD_PC, LD_LED,
-					input logic 		ADDR1MUX, SR2MUX, MIO_EN, 
-					input logic  [1 :0]	PCMUX, DRMUX, ADDR2MUX, SR1MUX, ALUK, 
+					input logic 		ADDR1MUX, SR2MUX, MIO_EN, SR1MUX,DRMUX,
+					input logic  [1 :0]	PCMUX, ADDR2MUX, ALUK, 
 					input logic  [15:0]	MDR_in,
 					output logic [15:0]	MDR_out, MAR_out, IR_out, PC_out,
-					output logic 		BEN
+					output logic 		BEN,
 					output logic [11:0] LED
 				);
 				
@@ -47,16 +47,14 @@ module datapath (
 	mux_21_dynamic sr2mux(
 							.sel(IR_out_wire[5]), 
 							.d0(SR2OUT), 
-							.d1({{11{IR_out_wire[4]}}, IR_out_wire[4:0]}),//'
+							.d1({{11{IR_out_wire[4]}}, IR_out_wire[4:0]}),//' ?
 							.out(sr2mux_out)
 							);//sel could be SR2MUX
 
-	mux_41_dynamic sr1mux(
+	mux_21_dynamic #(3) sr1mux(
 						.sel(SR1MUX), 
-						.d0(IR_out_wire[11:9]), 
+						.d0(IR_out_wire[11:9]), // changed
 						.d1(IR_out_wire[8:6]), 
-						.d2(3'b110), 
-						.d3(), 
 						.out(reg_file_sr1_in)
 						);
 
@@ -78,12 +76,10 @@ module datapath (
 							.out(addr2mux_out)
 							);
 
-	mux_41_dynamic #(3) drmux(
+	mux_21_dynamic #(3) drmux(
 						.sel(DRMUX), 
-						.d0(IR_out_wire[11:9]), 
+						.d0(IR_out_wire[11:9]), //changed
 						.d1(3'b111), 
-						.d2(3'b110), 
-						.d3(), 
 						.out(drmux_out)
 						);
 

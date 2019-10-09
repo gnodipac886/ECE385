@@ -36,20 +36,49 @@ initial begin : TEST_VECTORS
 
 #2   Reset = 1;
 
+#2	 Continue = 1;
+
+#2   S = 16'h000B;
+
 #2   Run = 1;
 
 #2   Run = 0;
 #2   Run = 1;
 
-#50   Continue = 1;
 
-#50   Continue = 0;
-#50   Continue = 1;
+#50 S = 16'h0007;
 
-#100   Continue = 1;
+#2	 Continue = 1;
 
-#100   Continue = 0;
-#100   Continue = 1;
+#2	 Continue = 0;
+
+#2	 Continue = 1;
+
+# 50 S = 16'h0004;
+
+#50	 Continue = 0;
+
+#2 	 Continue = 1;
+
+
+#50  Continue = 0;
+
+#2   Continue = 1;
+
+#50  Continue = 0;
+
+#2   Continue = 1;
+
+#50  Continue = 0;
+
+#2   Continue = 1;
+
+#50  Continue = 0;
+
+#2   Continue = 1;
+
+
+
  end
  
 endmodule 
