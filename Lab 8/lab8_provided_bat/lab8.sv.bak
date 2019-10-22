@@ -80,7 +80,7 @@ module lab8( input               CLOCK_50,
     );
      
      // You need to make sure that the port names here match the ports in Qsys-generated codes.
-     lab8_soc nios_system(
+     nios_system nios_system(
                              .clk_clk(Clk),         
                              .reset_reset_n(1'b1),    // Never reset NIOS
                              .sdram_wire_addr(DRAM_ADDR), 
@@ -108,12 +108,12 @@ module lab8( input               CLOCK_50,
     vga_clk vga_clk_instance(.inclk0(Clk), .c0(VGA_CLK));
     
     // TODO: Fill in the connections for the rest of the modules 
-   // 1 VGA_controller vga_controller_instance();
+    VGA_controller vga_controller_instance();
     
     // Which signal should be frame_clk?
-    // 2 ball ball_instance();
+    ball ball_instance();
     
-   // 3 color_mapper color_instance();
+    color_mapper color_instance();
     
     // Display keycode on hex display
     HexDriver hex_inst_0 (keycode[3:0], HEX0);
