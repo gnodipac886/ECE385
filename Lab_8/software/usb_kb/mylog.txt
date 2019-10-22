@@ -1,0 +1,4 @@
+Using cable "USB-Blaster [USB-0]", device 1, instance 0x00
+Pausing target processor: OK
+Reading System ID at address 0x000000B0: verified
+Leaving target processor paused
