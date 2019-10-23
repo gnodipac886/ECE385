@@ -17,6 +17,7 @@
 module  ball ( input         Clk,                // 50 MHz clock
                              Reset,              // Active-high reset signal
                              frame_clk,          // The clock indicating a new frame (~60Hz)
+               input [7:0]	 keycode,			 // keyboard input
                input [9:0]   DrawX, DrawY,       // Current pixel coordinates
                output logic  is_ball             // Whether current pixel belongs to ball or background
               );
@@ -33,6 +34,10 @@ module  ball ( input         Clk,                // 50 MHz clock
     
     logic [9:0] Ball_X_Pos, Ball_X_Motion, Ball_Y_Pos, Ball_Y_Motion;
     logic [9:0] Ball_X_Pos_in, Ball_X_Motion_in, Ball_Y_Pos_in, Ball_Y_Motion_in;
+    logic [7:0] W = 8'h1A;
+    logic [7:0] A = 8'h04;
+    logic [7:0] S = 8'h16;
+    logic [7:0] D = 8'h07;
     
     //////// Do not modify the always_ff blocks. ////////
     // Detect rising edge of frame_clk
@@ -82,7 +87,63 @@ module  ball ( input         Clk,                // 50 MHz clock
             else if ( Ball_Y_Pos <= Ball_Y_Min + Ball_Size )  // Ball is at the top edge, BOUNCE!
                 Ball_Y_Motion_in = Ball_Y_Step;
             // TODO: Add other boundary detections and handle keypress here.
-        
+            if( Ball_X_Pos + Ball_Size >= Ball_X_Max )  // Ball is at the right edge, BOUNCE!
+                Ball_X_Motion_in = (~(Ball_X_Step) + 1'b1);  // 2's complement.  
+            else if ( Ball_X_Pos <= Ball_X_Min + Ball_Size )  // Ball is at the left edge, BOUNCE!
+                Ball_X_Motion_in = Ball_X_Step;
+            //keypress
+            if(keycode == W) begin //going up so Y motion should be -1
+            	Ball_Y_Motion_in = (~(Ball_Y_Step) + 1'b1);
+            	Ball_X_Motion_in = 10'd0;
+            	if( Ball_Y_Pos + Ball_Size >= Ball_Y_Max )  // Ball is at the bottom edge, BOUNCE!
+                	Ball_Y_Motion_in = (~(Ball_Y_Step) + 1'b1);  // 2's complement.  
+            	else if ( Ball_Y_Pos <= Ball_Y_Min + Ball_Size )  // Ball is at the top edge, BOUNCE!
+                	Ball_Y_Motion_in = Ball_Y_Step;
+            // TODO: Add other boundary detections and handle keypress here.
+            	if( Ball_X_Pos + Ball_Size >= Ball_X_Max )  // Ball is at the right edge, BOUNCE!
+                	Ball_X_Motion_in = (~(Ball_X_Step) + 1'b1);  // 2's complement.  
+            	else if ( Ball_X_Pos <= Ball_X_Min + Ball_Size )  // Ball is at the left edge, BOUNCE!
+                	Ball_X_Motion_in = Ball_X_Step;
+            end 
+            if(keycode == S) begin //going down so Y motion should be 1
+            	Ball_Y_Motion_in = Ball_Y_Step;
+            	Ball_X_Motion_in = 10'd0;
+            	if( Ball_Y_Pos + Ball_Size >= Ball_Y_Max )  // Ball is at the bottom edge, BOUNCE!
+                	Ball_Y_Motion_in = (~(Ball_Y_Step) + 1'b1);  // 2's complement.  
+            	else if ( Ball_Y_Pos <= Ball_Y_Min + Ball_Size )  // Ball is at the top edge, BOUNCE!
+                	Ball_Y_Motion_in = Ball_Y_Step;
+            // TODO: Add other boundary detections and handle keypress here.
+            	if( Ball_X_Pos + Ball_Size >= Ball_X_Max )  // Ball is at the right edge, BOUNCE!
+                	Ball_X_Motion_in = (~(Ball_X_Step) + 1'b1);  // 2's complement.  
+            	else if ( Ball_X_Pos <= Ball_X_Min + Ball_Size )  // Ball is at the left edge, BOUNCE!
+                	Ball_X_Motion_in = Ball_X_Step;
+            end 
+            if(keycode == A) begin //going left so X motion should be -1
+            	Ball_X_Motion_in = (~(Ball_X_Step) + 1'b1);
+            	Ball_Y_Motion_in = 10'd0;
+            	if( Ball_Y_Pos + Ball_Size >= Ball_Y_Max )  // Ball is at the bottom edge, BOUNCE!
+                	Ball_Y_Motion_in = (~(Ball_Y_Step) + 1'b1);  // 2's complement.  
+            	else if ( Ball_Y_Pos <= Ball_Y_Min + Ball_Size )  // Ball is at the top edge, BOUNCE!
+                	Ball_Y_Motion_in = Ball_Y_Step;
+            // TODO: Add other boundary detections and handle keypress here.
+            	if( Ball_X_Pos + Ball_Size >= Ball_X_Max )  // Ball is at the right edge, BOUNCE!
+                	Ball_X_Motion_in = (~(Ball_X_Step) + 1'b1);  // 2's complement.  
+            	else if ( Ball_X_Pos <= Ball_X_Min + Ball_Size )  // Ball is at the left edge, BOUNCE!
+                	Ball_X_Motion_in = Ball_X_Step;
+            end
+            if(keycode == D) begin //going right so X motion should be 1
+            	Ball_X_Motion_in = Ball_X_Step;
+            	Ball_Y_Motion_in = 10'd0;
+            	if( Ball_Y_Pos + Ball_Size >= Ball_Y_Max )  // Ball is at the bottom edge, BOUNCE!
+                	Ball_Y_Motion_in = (~(Ball_Y_Step) + 1'b1);  // 2's complement.  
+            	else if ( Ball_Y_Pos <= Ball_Y_Min + Ball_Size )  // Ball is at the top edge, BOUNCE!
+                	Ball_Y_Motion_in = Ball_Y_Step;
+            // TODO: Add other boundary detections and handle keypress here.
+            	if( Ball_X_Pos + Ball_Size >= Ball_X_Max )  // Ball is at the right edge, BOUNCE!
+                	Ball_X_Motion_in = (~(Ball_X_Step) + 1'b1);  // 2's complement.  
+            	else if ( Ball_X_Pos <= Ball_X_Min + Ball_Size )  // Ball is at the left edge, BOUNCE!
+                	Ball_X_Motion_in = Ball_X_Step;
+            end 
         
             // Update the ball's position with its motion
             Ball_X_Pos_in = Ball_X_Pos + Ball_X_Motion;

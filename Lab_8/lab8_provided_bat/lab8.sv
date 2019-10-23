@@ -46,12 +46,15 @@ module lab8( input               CLOCK_50,
                                  DRAM_CLK      //SDRAM Clock
                     );
     
-    logic Reset_h, Clk;
+    logic Reset_h, Reset_ball, Clk;
     logic [7:0] keycode;
+    logic [9:0] DrawX, DrawY;
+    logic is_ball;
     
     assign Clk = CLOCK_50;
     always_ff @ (posedge Clk) begin
         Reset_h <= ~(KEY[0]);        // The push buttons are active low
+        Reset_ball <= ~(KEY[1]);     // Reset the ball's position
     end
     
     logic [1:0] hpi_addr;
@@ -108,12 +111,34 @@ module lab8( input               CLOCK_50,
     vga_clk vga_clk_instance(.inclk0(Clk), .c0(VGA_CLK));
     
     // TODO: Fill in the connections for the rest of the modules 
-   // 1 VGA_controller vga_controller_instance();
+   VGA_controller vga_controller_instance(  .Clk(Clk),
+                                            .Reset(Reset_h),
+                                            .VGA_HS(VGA_HS),
+                                            .VGA_VS(VGA_VS),
+                                            .VGA_CLK(VGA_CLK),
+                                            .VGA_BLANK_N(VGA_BLANK_N),
+                                            .VGA_SYNC_N(VGA_SYNC_N),
+                                            .DrawX(DrawX),
+                                            .DrawY(DrawY)
+                                            );
     
     // Which signal should be frame_clk?
-    // 2 ball ball_instance();
+    ball ball_instance( .Clk(Clk),
+                        .Reset(Reset_ball),
+                        .frame_clk(VGA_VS),
+                        .keycode(keycode),
+                        .DrawX(DrawX),
+                        .DrawY(DrawY),
+                        .is_ball(is_ball)
+                        );
     
-   // 3 color_mapper color_instance();
+   color_mapper color_instance( .is_ball(is_ball),
+                                .DrawX(DrawX),
+                                .DrawY(DrawY),
+                                .VGA_R(VGA_R),
+                                .VGA_G(VGA_G),
+                                .VGA_B(VGA_B)
+                                );
     
     // Display keycode on hex display
     HexDriver hex_inst_0 (keycode[3:0], HEX0);
