@@ -58,6 +58,106 @@ char charsToHex(char c1, char c2)
 	return (hex1 << 4) + hex2;
 }
 
+void rotWord(unsigned char * word)
+{
+	unsigned char temp = word[0];
+	word[0] = word[1];
+	word[1] = word[2];
+	word[2] = word[3];
+	word[3] = temp;
+}
+
+void keyExpansion(unsigned char * key, unsigned char * keySchedule)
+{
+	unsigned char prevword[4];
+	unsigned char temp[4];
+	int i;
+	int j;
+	int wordCount;
+	for(i = 0; i < 16; i++){
+		keySchedule[i] = key[i];
+	}
+	while(i < 176){
+		for(j = 0; j < 4; j++){
+			prevword[j] = keySchedule[i + j - 4];
+		}
+		if(i % 16 == 0){
+			rotWord(&prevword);
+			for(wordCount = 0; wordCount < 4; wordCount++){
+				prevword[wordCount] = subBtyes(prevword[wordCount]);
+			}
+			prevword = prevword ^ Rcon[i/16];
+		}
+		for(j = 0; j < 4; j++){
+			keySchedule[i] = keySchedule[i - 16] ^ prevword[j];
+			i++
+		}
+	}
+}
+
+void addRoundKey(unsigned char * msg, unsigned char * key, int count)
+{
+	int i;
+	for(i = 0; i < 16; i++){
+		msg[i] ^= key[count * 16 + i];
+	}
+}
+
+unsigned char subBtyes(unsigned char byte)
+{
+	return aes_sbox[byte];
+}
+
+void shiftRows(unsigned char * msg)
+{
+	unsigned char temp;
+	temp = msg[1];
+	msg[1] = msg[5];
+	msg[5] = msg[9];
+	msg[9] = msg[13];
+	msg[13] = temp;
+	temp = msg[2];
+	msg[2] = msg[10];
+	msg[10] = temp;
+	temp = msg[6];
+	msg[6] = msg[14];
+	msg[14] = temp;
+	temp = msg[15];
+	msg[15] = msg[11];
+	msg[11] = msg[7];
+	msg[3] = msg[3];
+	msg[3] = temp;
+}
+
+void mixColumn(unsigned char * msg)
+{
+	int i;
+	unsigned char temp[16];
+	for(i = 0; i < 16; i++){
+		temp[i] = msg[i];
+	}
+	msg[0] = gf_mul[temp[0]][0] ^ gf_mul[temp[1]][1] ^ temp[2] ^ temp[3];
+	msg[1] = temp[0] ^ gf_mul[temp[1]][1] ^ gf_mul[temp[2]][2] ^ temp[3];
+	msg[2] = temp[0] ^ temp[1] ^ gf_mul[temp[2]][0] ^ gf_mul[temp[3]][1];
+	msg[3] = gf_mul[temp[0]][1] ^ temp[1] ^ temp[2] ^ gf_mul[temp[3]][0];
+
+	msg[4] = gf_mul[temp[4]][0] ^ gf_mul[temp[5]][1] ^ temp[6] ^ temp[7];
+	msg[5] = temp[4] ^ gf_mul[temp[5]][1] ^ gf_mul[temp[6]][2] ^ temp[7];
+	msg[6] = temp[4] ^ temp[5] ^ gf_mul[temp[6]][0] ^ gf_mul[temp[7]][1];
+	msg[7] = gf_mul[temp[4]][1] ^ temp[5] ^ temp[6] ^ gf_mul[temp[7]][0];
+
+	msg[8] = gf_mul[temp[8]][0] ^ gf_mul[temp[9]][1] ^ temp[10] ^ temp[11];
+	msg[9] = temp[8] ^ gf_mul[temp[9]][1] ^ gf_mul[temp[10]][2] ^ temp[11];
+	msg[10] = temp[8] ^ temp[9] ^ gf_mul[temp[10]][0] ^ gf_mul[temp[11]][1];
+	msg[11] = gf_mul[temp[8]][1] ^ temp[9] ^ temp[10] ^ gf_mul[temp[11]][0];
+
+	msg[12] = gf_mul[temp[12]][0] ^ gf_mul[temp[13]][1] ^ temp[14] ^ temp[15];
+	msg[13] = temp[12] ^ gf_mul[temp[13]][1] ^ gf_mul[temp[14]][2] ^ temp[15];
+	msg[14] = temp[12] ^ temp[13] ^ gf_mul[temp[14]][0] ^ gf_mul[temp[15]][1];
+	msg[15] = gf_mul[temp[12]][1] ^ temp[13] ^ temp[14] ^ gf_mul[temp[15]][0];
+
+}
+
 /** encrypt
  *  Perform AES encryption in software.
  *
@@ -69,6 +169,31 @@ char charsToHex(char c1, char c2)
 void encrypt(unsigned char * msg_ascii, unsigned char * key_ascii, unsigned int * msg_enc, unsigned int * key)
 {
 	// Implement this function
+	unsigned char tempmsg[16];
+	unsigned char tempkey[16];
+	unsigned char temp4[4];
+	int i;
+	int j;
+	for(i = 0; i < 16; i++){
+		tempmsg[i] = charsToHex(msg_ascii[2 * i], msg_ascii[2 * i + 1]);
+		tempkey[i] = charsToHex(key_ascii[2 * i], key_ascii[2 * i + 1]);
+	}
+	unsigned char keySchedule[176];
+	keyExpansion(&tempkey, &keySchedule);
+	addRoundKey(msg_ascii, &keySchedule, 0);
+	for(i = 0; i < 9; i++){
+		for(j = 0; j < 16; j++){
+			msg_ascii[j] = subBtyes(msg_ascii[j]);
+		}
+		shiftRows(msg_ascii);
+		mixColumn(msg_ascii);
+		addRoundKey(msg_ascii, &keySchedule, (i + 1));
+	}
+	for(j = 0; j < 16; j++){
+			msg_ascii[j] = subBtyes(msg_ascii[j]);
+	}
+	shiftRows(msg_ascii);
+	addRoundKey(msg_ascii, &keySchedule, 10);
 }
 
 /** decrypt
