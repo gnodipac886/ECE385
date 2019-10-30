@@ -67,6 +67,7 @@ void printMsg(unsigned char * msg)
 		}
 		printf("\n");
 	}
+	printf("\n");
 }
 
 unsigned char subBtyes(unsigned char input)
@@ -87,12 +88,12 @@ void keyExpansion(unsigned char * key, unsigned char * keySchedule)
 {
 	unsigned char prevword[4];
 	unsigned char temp[4];
-	int i;
-	int j;
+	int i, j, count;
 	int wordCount;
 	for(i = 0; i < 16; i++){
 		keySchedule[i] = key[i];
 	}
+	i = 16;
 	while(i < 176){
 		for(j = 0; j < 4; j++){
 			prevword[j] = keySchedule[i + j - 4];
@@ -102,7 +103,8 @@ void keyExpansion(unsigned char * key, unsigned char * keySchedule)
 			for(wordCount = 0; wordCount < 4; wordCount++){
 				prevword[wordCount] = subBtyes(prevword[wordCount]);
 			}
-			prevword[0] = prevword[0] ^ Rcon[i/16];
+			prevword[0] ^= Rcon[(i/16)] >> 24;
+			//printf("%x, %x\n", prevword[0], Rcon[(i/16)] >> 24);
 		}
 		for(j = 0; j < 4; j++){
 			keySchedule[i] = keySchedule[i - 16] ^ prevword[j];
@@ -136,7 +138,7 @@ void shiftRows(unsigned char * msg)
 	temp = msg[15];
 	msg[15] = msg[11];
 	msg[11] = msg[7];
-	msg[3] = msg[3];
+	msg[7] = msg[3];
 	msg[3] = temp;
 }
 
@@ -148,25 +150,42 @@ void mixColumn(unsigned char * msg)
 		temp[i] = msg[i];
 	}
 	msg[0] = gf_mul[temp[0]][0] ^ gf_mul[temp[1]][1] ^ temp[2] ^ temp[3];
-	msg[1] = temp[0] ^ gf_mul[temp[1]][1] ^ gf_mul[temp[2]][2] ^ temp[3];
+	msg[1] = temp[0] ^ gf_mul[temp[1]][0] ^ gf_mul[temp[2]][1] ^ temp[3];
 	msg[2] = temp[0] ^ temp[1] ^ gf_mul[temp[2]][0] ^ gf_mul[temp[3]][1];
 	msg[3] = gf_mul[temp[0]][1] ^ temp[1] ^ temp[2] ^ gf_mul[temp[3]][0];
 
 	msg[4] = gf_mul[temp[4]][0] ^ gf_mul[temp[5]][1] ^ temp[6] ^ temp[7];
-	msg[5] = temp[4] ^ gf_mul[temp[5]][1] ^ gf_mul[temp[6]][2] ^ temp[7];
+	msg[5] = temp[4] ^ gf_mul[temp[5]][0] ^ gf_mul[temp[6]][1] ^ temp[7];
 	msg[6] = temp[4] ^ temp[5] ^ gf_mul[temp[6]][0] ^ gf_mul[temp[7]][1];
 	msg[7] = gf_mul[temp[4]][1] ^ temp[5] ^ temp[6] ^ gf_mul[temp[7]][0];
 
 	msg[8] = gf_mul[temp[8]][0] ^ gf_mul[temp[9]][1] ^ temp[10] ^ temp[11];
-	msg[9] = temp[8] ^ gf_mul[temp[9]][1] ^ gf_mul[temp[10]][2] ^ temp[11];
+	msg[9] = temp[8] ^ gf_mul[temp[9]][0] ^ gf_mul[temp[10]][1] ^ temp[11];
 	msg[10] = temp[8] ^ temp[9] ^ gf_mul[temp[10]][0] ^ gf_mul[temp[11]][1];
 	msg[11] = gf_mul[temp[8]][1] ^ temp[9] ^ temp[10] ^ gf_mul[temp[11]][0];
 
 	msg[12] = gf_mul[temp[12]][0] ^ gf_mul[temp[13]][1] ^ temp[14] ^ temp[15];
-	msg[13] = temp[12] ^ gf_mul[temp[13]][1] ^ gf_mul[temp[14]][2] ^ temp[15];
+	msg[13] = temp[12] ^ gf_mul[temp[13]][0] ^ gf_mul[temp[14]][1] ^ temp[15];
 	msg[14] = temp[12] ^ temp[13] ^ gf_mul[temp[14]][0] ^ gf_mul[temp[15]][1];
 	msg[15] = gf_mul[temp[12]][1] ^ temp[13] ^ temp[14] ^ gf_mul[temp[15]][0];
 
+	// int i, j, k;
+	// int mat[4][4] = {{2, 3, 1, 1}, {1, 2, 3, 1}, {1, 1, 2, 3}, {3, 1, 1, 2}};
+	// unsigned char temp[16], temp4[4];
+	// for(i = 0; i < 4; i++){
+	// 	for(j = 0; j < 4; j++){
+	// 		for(k = 0; k < 4; k++){
+	// 			if(mat[j][k] != 1)
+	// 				temp4[k] = gf_mul[msg[i * 4 + k]][mat[j][k] - 1];
+	// 			else if(mat[j][k] == 1)
+	// 				temp4[k] = msg[i * 4 + k];
+	// 		}
+	// 		temp[i * 4 + j] = temp4[0] ^ temp4[1] ^ temp4[2] ^ temp4[3];
+	// 	}
+	// }
+	// for(i = 0; i < 16; i++){
+	// 	msg[i] = temp[i];
+	// }
 }
 
 /** encrypt
@@ -190,21 +209,34 @@ void encrypt(unsigned char * msg_ascii, unsigned char * key_ascii, unsigned int 
 		tempkey[i] = charsToHex(key_ascii[2 * i], key_ascii[2 * i + 1]);
 	}
 	unsigned char keySchedule[176];
+	//printMsg(tempmsg);
+	// printMsg(tempkey);
 	keyExpansion(tempkey, keySchedule);
-	addRoundKey(msg_ascii, keySchedule, 0);
+
+	// for(int i = 0; i < 11; i++)
+	// 	printMsg(&keySchedule[i * 16]);
+
+	addRoundKey(tempmsg, keySchedule, 0);
+
 	for(i = 0; i < 9; i++){
 		for(j = 0; j < 16; j++){
-			msg_ascii[j] = subBtyes(msg_ascii[j]);
+			tempmsg[j] = subBtyes(tempmsg[j]);
 		}
-		shiftRows(msg_ascii);
-		mixColumn(msg_ascii);
-		addRoundKey(msg_ascii, keySchedule, (i + 1));
+		shiftRows(tempmsg);
+		mixColumn(tempmsg);
+		addRoundKey(tempmsg, keySchedule, (i + 1));
 	}
 	for(j = 0; j < 16; j++){
-			msg_ascii[j] = subBtyes(msg_ascii[j]);
+			tempmsg[j] = subBtyes(tempmsg[j]);
 	}
-	shiftRows(msg_ascii);
-	addRoundKey(msg_ascii, keySchedule, 10);
+	shiftRows(tempmsg);
+	addRoundKey(tempmsg, keySchedule, 10);
+	//printMsg(tempmsg);
+	int ans, keyans;
+	for(i = 0; i < 4; i++){
+		msg_enc[i] = (tempmsg[i * 4] << 24) + (tempmsg[i * 4 + 1] << 16) + (tempmsg[i * 4 + 2] << 8) + (tempmsg[i * 4 + 3]);
+		key[i] = (tempkey[i * 4] << 24) + (tempkey[i * 4 + 1] << 16) + (tempkey[i * 4 + 2] << 8) + (tempkey[i * 4 + 3]);
+	}
 }
 
 /** decrypt
