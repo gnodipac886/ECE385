@@ -58,6 +58,22 @@ char charsToHex(char c1, char c2)
 	return (hex1 << 4) + hex2;
 }
 
+void printMsg(unsigned char * msg)
+{
+	int i, j;
+	for(i = 0; i < 4; i++){
+		for(j = 0; j < 4; j++){
+			printf("%x ", msg[j * 4 + i]);
+		}
+		printf("\n");
+	}
+}
+
+unsigned char subBtyes(unsigned char input)
+{
+	return aes_sbox[input];
+}
+
 void rotWord(unsigned char * word)
 {
 	unsigned char temp = word[0];
@@ -82,15 +98,15 @@ void keyExpansion(unsigned char * key, unsigned char * keySchedule)
 			prevword[j] = keySchedule[i + j - 4];
 		}
 		if(i % 16 == 0){
-			rotWord(&prevword);
+			rotWord(prevword);
 			for(wordCount = 0; wordCount < 4; wordCount++){
 				prevword[wordCount] = subBtyes(prevword[wordCount]);
 			}
-			prevword = prevword ^ Rcon[i/16];
+			prevword[0] = prevword[0] ^ Rcon[i/16];
 		}
 		for(j = 0; j < 4; j++){
 			keySchedule[i] = keySchedule[i - 16] ^ prevword[j];
-			i++
+			i++;
 		}
 	}
 }
@@ -101,11 +117,6 @@ void addRoundKey(unsigned char * msg, unsigned char * key, int count)
 	for(i = 0; i < 16; i++){
 		msg[i] ^= key[count * 16 + i];
 	}
-}
-
-unsigned char subBtyes(unsigned char byte)
-{
-	return aes_sbox[byte];
 }
 
 void shiftRows(unsigned char * msg)
@@ -179,21 +190,21 @@ void encrypt(unsigned char * msg_ascii, unsigned char * key_ascii, unsigned int 
 		tempkey[i] = charsToHex(key_ascii[2 * i], key_ascii[2 * i + 1]);
 	}
 	unsigned char keySchedule[176];
-	keyExpansion(&tempkey, &keySchedule);
-	addRoundKey(msg_ascii, &keySchedule, 0);
+	keyExpansion(tempkey, keySchedule);
+	addRoundKey(msg_ascii, keySchedule, 0);
 	for(i = 0; i < 9; i++){
 		for(j = 0; j < 16; j++){
 			msg_ascii[j] = subBtyes(msg_ascii[j]);
 		}
 		shiftRows(msg_ascii);
 		mixColumn(msg_ascii);
-		addRoundKey(msg_ascii, &keySchedule, (i + 1));
+		addRoundKey(msg_ascii, keySchedule, (i + 1));
 	}
 	for(j = 0; j < 16; j++){
 			msg_ascii[j] = subBtyes(msg_ascii[j]);
 	}
 	shiftRows(msg_ascii);
-	addRoundKey(msg_ascii, &keySchedule, 10);
+	addRoundKey(msg_ascii, keySchedule, 10);
 }
 
 /** decrypt
