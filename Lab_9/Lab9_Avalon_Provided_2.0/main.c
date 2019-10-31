@@ -16,6 +16,7 @@ University of Illinois ECE Department
 // Pointer to base address of AES module, make sure it matches Qsys
 volatile unsigned int * AES_PTR = (unsigned int *) 0x00000100;
 
+
 // Execution mode: 0 for testing, 1 for benchmarking
 int run_mode = 0;
 
@@ -283,13 +284,23 @@ int main()
 			for(i = 0; i < 4; i++){
 				printf("%08x", msg_enc[i]);
 			}
-			printf("\n");
+			AES_PTR[0] = key[0];
+			AES_PTR[1] = key[1];
+			AES_PTR[2] = key[2];
+			AES_PTR[3] = key[3];
+
+			AES_PTR[10] = 0xDEADBEEF;
+			if (AES_PTR[10] != 0xDEADBEEF)
+				printf("\nError !");
+			else 
+				printf("\nsuccess");
+			/*printf("\n");
 			decrypt(msg_enc, msg_dec, key);
 			printf("\nDecrypted message is: \n");
 			for(i = 0; i < 4; i++){
 				printf("%08x", msg_dec[i]);
 			}
-			printf("\n");
+			printf("\n");*/
 		}
 	}
 	else {

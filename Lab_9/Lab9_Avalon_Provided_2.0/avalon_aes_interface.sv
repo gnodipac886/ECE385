@@ -38,5 +38,45 @@ module avalon_aes_interface (
 	output logic [31:0] EXPORT_DATA		// Exported Conduit Signal to LEDs
 );
 
+	logic [15:0][31:0] outreg;
+	logic [31:0] modData;
+
+	always_ff @ (posedge CLK) begin
+		if(AVL_BYTE_EN[0] == 1'b1)
+			modData[7:0] <= AVL_WRITEDATA[7:0];
+		if(AVL_BYTE_EN[1] == 1'b1)
+			modData[15:8] <= AVL_WRITEDATA[15:8];
+		if(AVL_BYTE_EN[2] == 1'b1)
+			modData[23:16] <= AVL_WRITEDATA[23:16];
+		if(AVL_BYTE_EN[3] == 1'b1)
+			modData[31:24] <= AVL_WRITEDATA[31:24];
+		if(RESET) begin
+			outreg[0] 	<=	32'd0;
+			outreg[1] 	<=	32'd0;
+			outreg[2] 	<=	32'd0;
+			outreg[3] 	<=	32'd0;
+			outreg[4] 	<=	32'd0;
+			outreg[5] 	<=	32'd0;
+			outreg[6] 	<=	32'd0;
+			outreg[7] 	<=	32'd0;
+			outreg[8] 	<=	32'd0;
+			outreg[9] 	<=	32'd0;
+			outreg[10] 	<=	32'd0;
+			outreg[11] 	<=	32'd0;
+			outreg[12] 	<=	32'd0;
+			outreg[13] 	<=	32'd0;
+			outreg[14] 	<=	32'd0;
+			outreg[15] 	<=	32'd0;
+		end
+		else if(AVL_WRITE && AVL_CS) begin
+				outreg[AVL_ADDR]	<=	modData;
+		end
+	end
+
+	always_comb begin
+		EXPORT_DATA = {outreg[0][31:16], outreg[3][15:0]};
+		AVL_READDATA = (AVL_READ && AVL_CS) ? outreg[AVL_ADDR] : 32'd0;
+	end 
+
 
 endmodule
