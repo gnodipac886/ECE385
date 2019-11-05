@@ -18,21 +18,35 @@ module AES (
 );
 	logic [127:0] tempDec;
 	logic [31:0] mixColIn, mixColOut;
-	logic [127:0] shiftRowsIn, shiftRowsOut, addRoundKeyIn, addRoundKeyKey, addRoundKeyOut;
+	logic [127:0] shiftRowsIn, shiftRowsOut, addRoundKeyIn, addRoundKeyKey, addRoundKeyOut, ;
 	logic [1407:0] myKeySchedule;
-
-	addRoundKey myaddRoundKey(.in(addRoundKeyIn), .key(addRoundKeyKey), .out(addRoundKeyOut));
 
 	KeyExpansion myKeyExpansion(.clk(CLK), .Cipherkey(AES_KEY), .KeySchedule(myKeySchedule));
 
-	InvMixColumns myInvMixColumns(.in(mixColIn), .out(mixColOut));
-	
+	/*
+	MUX layout
+		0	:	InvShiftRows
+		1 	:	InvSubBytes
+		2 	: 	addRoundKey
+		3 	: 	InvMixColumns
+	*/
+
+	addRoundKey myaddRoundKey(.in(addRoundKeyIn), .key(addRoundKeyKey), .out(addRoundKeyOut));
+	InvMixColumns myInvMixColumns(.in(mixColIn), .out(mixColOut));	
 	InvShiftRows myInvShiftRows(.data_in(shiftRowsIn), .data_out(shiftRowsOut));
 
-	InvSubBytes myInvSubBytes[15:0](.clk(CLK), .in(), .out())
+	InvSubBytes sub0(.clk(CLK), .in(tempDec[7:0]), .out());
 
+	mux41_128bit mymux41_128bit(
+								.in0(shiftRowsOut),
+								.in1(),
+								.in2(addRoundKeyOut), 
+								.in3(),
+								.sel(),
+								.out()
+								);
 
-	enum logic[2:0] {HOLD, addRoundKeyS, InvShiftRowsS, InvSubBytesS, InvMixColumnsS, DONE} curr, next;
+	enum logic[2:0] {HOLD, addRoundKeyS, InvShiftRowsS, InvSubBytesS, InvMixColumnsS1, InvMixColumnsS2, InvMixColumnsS3, InvMixColumnsS4, DONE} curr, next;
 
 	always_ff @(posedge CLK or posedge RESET) begin
 		if(RESET) begin
