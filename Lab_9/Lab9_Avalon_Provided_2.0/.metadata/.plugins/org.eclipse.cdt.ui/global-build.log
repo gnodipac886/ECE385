@@ -1,0 +1,74 @@
+14:23:52 **** Build of configuration Nios II for project lab9_app_bsp ****
+make all 
+[BSP build complete]
+14:23:58 **** Build of configuration Nios II for project lab9_app ****
+make all 
+Info: Building ../lab9_app_bsp/
+C:/intelFPGA_lite/18.1/nios2eds/bin/gnu/H-x86_64-mingw32/bin/make --no-print-directory -C ../lab9_app_bsp/
+[BSP build complete]
+[lab9_app build complete]
+14:23:59 **** Incremental Build of configuration Nios II for project lab9_app_bsp ****
+make all 
+[BSP build complete]
+14:24:10 **** Incremental Build of configuration Nios II for project lab9_app ****
+make all 
+Info: Building ../lab9_app_bsp/
+C:/intelFPGA_lite/18.1/nios2eds/bin/gnu/H-x86_64-mingw32/bin/make --no-print-directory -C ../lab9_app_bsp/
+[BSP build complete]
+[lab9_app build complete]
+14:28:01 **** Build of configuration Nios II for project lab9_app ****
+make all 
+Info: Building ../lab9_app_bsp/
+C:/intelFPGA_lite/18.1/nios2eds/bin/gnu/H-x86_64-mingw32/bin/make --no-print-directory -C ../lab9_app_bsp/
+[BSP build complete]
+Info: Compiling main.c to obj/default/main.o
+nios2-elf-gcc -xc -MP -MMD -c -I../lab9_app_bsp//HAL/inc -I../lab9_app_bsp/ -I../lab9_app_bsp//drivers/inc  -pipe -D__hal__ -DALT_NO_INSTRUCTION_EMULATION -DALT_SINGLE_THREADED    -O0 -g -Wall   -mno-hw-div -mno-hw-mul -mno-hw-mulx -mgpopt=global  -o obj/default/main.o main.c
+main.c: In function 'keyExpansion':
+main.c:92:12: warning: unused variable 'count' [-Wunused-variable]
+  int i, j, count;
+            ^
+main.c:91:16: warning: unused variable 'temp' [-Wunused-variable]
+  unsigned char temp[4];
+                ^
+main.c: In function 'encrypt':
+main.c:236:11: warning: unused variable 'keyans' [-Wunused-variable]
+  int ans, keyans;
+           ^
+main.c:236:6: warning: unused variable 'ans' [-Wunused-variable]
+  int ans, keyans;
+      ^
+main.c:205:16: warning: unused variable 'temp4' [-Wunused-variable]
+  unsigned char temp4[4];
+                ^
+Info: Linking lab9_app.elf
+nios2-elf-g++  -T'../lab9_app_bsp//linker.x' -msys-crt0='../lab9_app_bsp//obj/HAL/src/crt0.o' -msys-lib=hal_bsp -L../lab9_app_bsp/   -Wl,-Map=lab9_app.map   -O0 -g -Wall   -mno-hw-div -mno-hw-mul -mno-hw-mulx -mgpopt=global  -o lab9_app.elf obj/default/main.o -lm -msys-lib=m
+nios2-elf-insert lab9_app.elf --thread_model hal --cpu_name nios2_gen2_0 --qsys true --simulation_enabled false --id 0 --sidp 0x58 --timestamp 1572549113 --stderr_dev jtag_uart_0 --stdin_dev jtag_uart_0 --stdout_dev jtag_uart_0 --sopc_system_name lab9_soc --quartus_project_dir "C:/Users/Eric/Desktop/ECE385/Lab_9" --sopcinfo C:/Users/Eric/Desktop/ECE385/Lab_9/software/lab9_app_bsp/../../lab9_soc.sopcinfo
+Info: (lab9_app.elf) 116 KBytes program size (code + initialized data).
+Info:                130947 KBytes free for stack + heap.
+Info: Creating lab9_app.objdump
+nios2-elf-objdump --disassemble --syms --all-header --source lab9_app.elf >lab9_app.objdump
+[lab9_app build complete]
+14:28:03 **** Build of configuration Nios II for project lab9_app_bsp ****
+make all 
+[BSP build complete]
+14:28:17 **** Incremental Build of configuration Nios II for project lab9_app ****
+make all 
+Info: Building ../lab9_app_bsp/
+C:/intelFPGA_lite/18.1/nios2eds/bin/gnu/H-x86_64-mingw32/bin/make --no-print-directory -C ../lab9_app_bsp/
+[BSP build complete]
+[lab9_app build complete]
+14:32:37 **** Build of configuration Nios II for project lab9_app ****
+make all 
+Info: Building ../lab9_app_bsp/
+C:/intelFPGA_lite/18.1/nios2eds/bin/gnu/H-x86_64-mingw32/bin/make --no-print-directory -C ../lab9_app_bsp/
+[BSP build complete]
+[lab9_app build complete]
+14:32:38 **** Build of configuration Nios II for project lab9_app_bsp ****
+make all 
+[BSP build complete]
+14:32:45 **** Incremental Build of configuration Nios II for project lab9_app ****
+make all 
+Info: Building ../lab9_app_bsp/
+C:/intelFPGA_lite/18.1/nios2eds/bin/gnu/H-x86_64-mingw32/bin/make --no-print-directory -C ../lab9_app_bsp/
+[BSP build complete]
+[lab9_app build complete]

@@ -1,0 +1,99 @@
+/************************************************************************
+Avalon-MM Interface for AES Decryption IP Core
+
+Dong Kai Wang, Fall 2017
+
+For use with ECE 385 Experiment 9
+University of Illinois ECE Department
+
+Register Map:
+
+ 0-3 : 4x 32bit AES Key
+ 4-7 : 4x 32bit AES Encrypted Message
+ 8-11: 4x 32bit AES Decrypted Message
+   12: Not Used
+	13: Not Used
+   14: 32bit Start Register
+   15: 32bit Done Register
+
+************************************************************************/
+
+module avalon_aes_interface (
+	// Avalon Clock Input
+	input logic CLK,
+	
+	// Avalon Reset Input
+	input logic RESET,
+	
+	// Avalon-MM Slave Signals
+	input  logic AVL_READ,					// Avalon-MM Read
+	input  logic AVL_WRITE,					// Avalon-MM Write
+	input  logic AVL_CS,						// Avalon-MM Chip Select
+	input  logic [3:0] AVL_BYTE_EN,		// Avalon-MM Byte Enable
+	input  logic [3:0] AVL_ADDR,			// Avalon-MM Address
+	input  logic [31:0] AVL_WRITEDATA,	// Avalon-MM Write Data
+	output logic [31:0] AVL_READDATA,	// Avalon-MM Read Data
+	
+	// Exported Conduit
+	output logic [31:0] EXPORT_DATA		// Exported Conduit Signal to LEDs
+);
+
+	logic [15:0][31:0] outreg;
+	logic [31:0] modData;
+
+	always_ff @ (posedge CLK) begin
+		if(RESET) begin
+			outreg[0] 	<=	32'h00000000;
+			outreg[1] 	<=	32'h00000000;
+			outreg[2] 	<=	32'h00000000;
+			outreg[3] 	<=	32'h00000000;
+			outreg[4] 	<=	32'h00000000;
+			outreg[5] 	<=	32'h00000000;
+			outreg[6] 	<=	32'h00000000;
+			outreg[7] 	<=	32'h00000000;
+			outreg[8] 	<=	32'h00000000;
+			outreg[9] 	<=	32'h00000000;
+			outreg[10] 	<=	32'h00000000;
+			outreg[11] 	<=	32'h00000000;
+			outreg[12] 	<=	32'h00000000;
+			outreg[13] 	<=	32'h00000000;
+			outreg[14] 	<=	32'h00000000;
+			outreg[15] 	<=	32'h00000000;
+		end
+		else if(AVL_WRITE && AVL_CS) begin
+			case(AVL_ADDR)
+				3'd0	: 	outreg[0]	<=	modData;
+				3'd1	: 	outreg[1]	<=	modData;
+				3'd2	: 	outreg[2]	<=	modData;
+				3'd3	: 	outreg[3]	<=	modData;
+				3'd4	: 	outreg[4]	<=	modData;
+				3'd5	: 	outreg[5]	<=	modData;
+				3'd6	: 	outreg[6]	<=	modData;
+				3'd7	: 	outreg[7]	<=	modData;
+				3'd8	: 	outreg[8]	<=	modData;
+				3'd9	: 	outreg[9]	<=	modData;
+				3'd10	: 	outreg[10]	<=	modData;
+				3'd11	: 	outreg[11]	<=	modData;
+				3'd12	: 	outreg[12]	<=	modData;
+				3'd13	: 	outreg[13]	<=	modData;
+				3'd14	: 	outreg[14]	<=	modData;
+				3'd15	: 	outreg[15]	<=	modData;
+				default: ;
+			endcase
+		end
+	end
+
+	always_comb begin
+		EXPORT_DATA = {outreg[0][31:16], outreg[3][15:0]};
+		if(AVL_BYTE_EN[0] == 1)
+			modData[7:0] = AVL_WRITEDATA[7:0];
+		if(AVL_BYTE_EN[1] == 1)
+			modData[15:8] = AVL_WRITEDATA[15:8];
+		if(AVL_BYTE_EN[2] == 1)
+			modData[23:16] = AVL_WRITEDATA[23:16];
+		if(AVL_BYTE_EN[3] == 1)
+			modData[31:24] = AVL_WRITEDATA[31:24];
+	end 
+
+
+endmodule

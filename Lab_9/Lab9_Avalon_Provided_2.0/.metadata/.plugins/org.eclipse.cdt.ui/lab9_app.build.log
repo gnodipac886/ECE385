@@ -1,0 +1,9 @@
+14:32:45 **** Incremental Build of configuration Nios II for project lab9_app ****
+make all 
+Info: Building ../lab9_app_bsp/
+C:/intelFPGA_lite/18.1/nios2eds/bin/gnu/H-x86_64-mingw32/bin/make --no-print-directory -C ../lab9_app_bsp/
+[BSP build complete]
+[lab9_app build complete]
+
+14:32:45 Build Finished (took 800ms)
+
