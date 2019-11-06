@@ -63,5 +63,13 @@ module avalon_aes_interface (
 		AVL_READDATA = (AVL_READ && AVL_CS) ? outreg[AVL_ADDR] : 32'd0;
 	end 
 
-
+AES myaes (
+			.CLK(CLK),
+		   	.RESET(RESET),
+		   	.AES_START(outreg[14][0]),
+		   	.AES_DONE(outreg[15][0]),
+		   	.AES_KEY({outreg[0], outreg[1], outreg[2], outreg[3]}),
+	       	.AES_MSG_ENC({outreg[4], outreg[5], outreg[6], outreg[7]}),
+	       	.AES_MSG_DEC({outreg[8], outreg[9], outreg[10], outreg[11]})
+	       );
 endmodule

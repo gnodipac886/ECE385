@@ -28,17 +28,17 @@ module AES (
 	always_comb begin
 		this_round_key = myKeySchedule[127:0];
 		unique case (counter)
-			5'd0 : this_round_key = myKeySchedule[1407:1280];
-			5'd1 : this_round_key = myKeySchedule[1279:1152];
-			5'd2 : this_round_key = myKeySchedule[1151:1024];
-			5'd3 : this_round_key = myKeySchedule[1023:896];
-			5'd4 : this_round_key = myKeySchedule[895:768];
+			5'd10 : this_round_key = myKeySchedule[1407:1280];
+			5'd9 : this_round_key = myKeySchedule[1279:1152];
+			5'd8 : this_round_key = myKeySchedule[1151:1024];
+			5'd7 : this_round_key = myKeySchedule[1023:896];
+			5'd6 : this_round_key = myKeySchedule[895:768];
 			5'd5 : this_round_key = myKeySchedule[767:640];
-			5'd6 : this_round_key = myKeySchedule[639:512];
-			5'd7 : this_round_key = myKeySchedule[511:384];
-			5'd8 : this_round_key = myKeySchedule[383:256];
-			5'd9 : this_round_key = myKeySchedule[255:128];
-			5'd10 : this_round_key = myKeySchedule[127:0];
+			5'd4 : this_round_key = myKeySchedule[639:512];
+			5'd3 : this_round_key = myKeySchedule[511:384];
+			5'd2 : this_round_key = myKeySchedule[383:256];
+			5'd1 : this_round_key = myKeySchedule[255:128];
+			5'd0 : this_round_key = myKeySchedule[127:0];
 			
 		endcase
 
@@ -92,28 +92,47 @@ module AES (
 	InvSubBytes sub14(.clk(CLK), .in(tempDec[119:112]), .out(InvSubBytes_out[119:112]));
 	InvSubBytes sub15(.clk(CLK), .in(tempDec[127:120]), .out(InvSubBytes_out[127:120]));
 
+	// always_ff @(posedge CLK) begin
+	// 	if(RESET) begin
+	// 		tempDec <=  128'd0;
+	// 		LD_E <= 1'b0;
+	// 	end 
+	// 	else begin
+	// 		if (AES_START && ~LD_E) begin
+	// 			tempDec <= AES_MSG_ENC;
+	// 			LD_E 	<= 1'b1;
+	// 		end
+	// 		else if (~AES_START) begin
+	// 			LD_E 	<= 1'b0;
+	// 		end
+	// 		else begin 
+	// 			tempDec <= next_tem;
+	// 			AES_MSG_DEC <= next_tem;
+	// 		end
+
+	// 	end 
+	// end 
+
 	always_ff @(posedge CLK) begin
 		if(RESET) begin
 			tempDec <=  128'd0;
-			LD_E <= 1'b0;
-		end 
-		else begin
-			if (AES_START && !LD_E) begin
-				tempDec <= AES_MSG_ENC;
-				LD_E <= 1'b1;
-			end
-			else if (!AES_START) begin
-				LD_E <= 1'b0;
-			end
-			else begin 
-				tempDec <= next_tem;
-				AES_MSG_DEC <= next_tem;
-				LD_E <= LD_E;
-			end
-
-		end 
+			LD_E <= 1'b1;
+		end
+		if(AES_START && LD_E) begin
+			tempDec <= AES_MSG_ENC;
+			LD_E <= 0;
+		end
+		if(AES_START && ~LD_E) begin
+			tempDec <= next_tem;
+			AES_MSG_DEC <= next_tem;
+		end
+		if(~AES_START && ~LD_E) begin
+			LD_E <= 1;
+			tempDec <= next_tem;
+			AES_MSG_DEC <= next_tem;
+		end
 	end 
-	
+
 	AES_controller myController(.*);
 	
 
@@ -128,23 +147,41 @@ module AES_controller 	(
 						);
 
 
-	enum logic[2:0] {HOLD, addRoundKeyS, InvShiftRowsS, InvSubBytesS, InvMixColumnsS1, InvMixColumnsS2, 
-						InvMixColumnsS3, InvMixColumnsS4, DONE}curr, next;
+	enum logic[3:0] {	
+						HOLD, addRoundKeyS, InvShiftRowsS, InvSubBytesS, 
+						InvMixColumnsS1, InvMixColumnsS2, 
+						InvMixColumnsS3, InvMixColumnsS4, 
+						DONE
+					}curr, next;
+
+	logic [4:0] 	next_counter;
+	logic LD_E;
+
 	always_ff @(posedge CLK) begin
 		if(RESET) begin
 			curr 	<= 	HOLD;
-		end 
-		else begin
+			counter <= 4'd0;
+			LD_E <= 1'b1;
+		end
+		if(AES_START && LD_E) begin
 			curr 	<=	next;
+			counter <= 	next_counter;
+			LD_E <= 0;
+		end
+		if(AES_START && ~LD_E) begin
+			curr 	<=	next;
+			counter <= 	next_counter;
+		end
+		if(~AES_START && ~LD_E) begin
+			LD_E <= 1;
+			curr 	<=	next;
+			counter <= 	next_counter;
 		end
 	end
 
 	always_comb begin
+		
 		next 		= 	curr;
-		AES_DONE 	= 	1'b0;
-		counter  	= 	counter;
-		word_sel 	= 	word_sel;
-		ope_sel 	= 	ope_sel;
 
 		unique case (curr)
 			HOLD 			: 	if(AES_START) begin
@@ -164,7 +201,7 @@ module AES_controller 	(
 									next 	= 	InvMixColumnsS1;
 								end 
 
-			InvShiftRows 	: 		next 	= 	InvSubBytesS;
+			InvShiftRowsS 	: 		next 	= 	InvSubBytesS;
 
 			InvSubBytesS	: 		next 	= 	addRoundKeyS;
 
@@ -182,19 +219,28 @@ module AES_controller 	(
 								else begin
 									next 	= 	HOLD;
 								end 
-			default : 	;
 		endcase
+	end 
+
+	always_comb begin
+
+		AES_DONE 	= 	1'b0;
+		next_counter= 	counter;
+		word_sel 	= 	2'b00;
+		ope_sel 	= 	2'b00;
 
 		case (curr)
 			HOLD 			: 	begin 
 									AES_DONE 	= 	1'b0;
-									counter  	= 	5'd0;
+									next_counter= 	5'd0;
 									word_sel 	= 	2'b00;
 									ope_sel 	= 	2'b00;
 								end 
 
 			addRoundKeyS 	: 	begin
-									counter 	= 	counter + 5'd1;
+									if(counter != 10) begin
+										next_counter= 	counter + 1;
+									end
 									ope_sel 	= 	2'b00;
 								end 
 
@@ -228,9 +274,6 @@ module AES_controller 	(
 			DONE 			: 	begin
 									AES_DONE 	= 	1'b1;
 								end 
-
-			default 		: /* default */;
-
 		endcase
 	end 
 endmodule

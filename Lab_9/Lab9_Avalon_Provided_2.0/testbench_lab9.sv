@@ -17,12 +17,12 @@ AES aes0(.*);
 
 always begin : CLOCK_GENERATION
 
-#1 Clk = ~Clk;
+#1 CLK = ~CLK;
 end
 
 initial begin : CLOCK_INITIALIZATION
 
-   Clk = 0;
+   CLK = 0;
 	
 	end
 	
