@@ -8,7 +8,7 @@ University of Illinois ECE Department
 ************************************************************************/
 
 module AES (
-	input	 logic CLK,
+	input 	logic CLK,
 	input  logic RESET,
 	input  logic AES_START,
 	output logic AES_DONE,
@@ -52,33 +52,24 @@ module AES (
 			2'b10: word = tempDec[95:64];
 			2'b11: word = tempDec[127:96];
 		endcase
-
 	end
+
 	always_comb begin
 		next_tem = tempDec;
 		unique case (ope_sel)
-			2'b00: next_tem = addRoundKeyOut;
-			2'b01: next_tem = shiftRowsOut;
-			2'b10: next_tem = InvSubBytes_out;
-			2'b11: begin
-					unique case (word_sel)
-						2'b00: next_tem[31:0] = mixColOut;
-						2'b01: next_tem[63:32] = mixColOut;
-						2'b10: next_tem[95:64] = mixColOut;
-						2'b11: next_tem[127:96] = mixColOut;
-						
-					endcase
-			end
-		
+			2'b00: 	next_tem = addRoundKeyOut;
+			2'b01: 	next_tem = shiftRowsOut;
+			2'b10: 	next_tem = InvSubBytes_out;
+			2'b11: 	begin
+						unique case (word_sel)
+							2'b00: next_tem[31:0] = mixColOut;
+							2'b01: next_tem[63:32] = mixColOut;
+							2'b10: next_tem[95:64] = mixColOut;
+							2'b11: next_tem[127:96] = mixColOut;
+						endcase
+					end
 		endcase
 	end
-	/*
-	MUX layout
-		0	:	InvShiftRows
-		1 	:	InvSubBytes
-		2 	: 	addRoundKey
-		3 	: 	InvMixColumns
-	*/
 
 	addRoundKey myaddRoundKey(.in(tempDec), .key(this_round_key), .out(addRoundKeyOut));
 	InvMixColumns myInvMixColumns(.in(word), .out(mixColOut));	
@@ -101,20 +92,7 @@ module AES (
 	InvSubBytes sub14(.clk(CLK), .in(tempDec[119:112]), .out(InvSubBytes_out[119:112]));
 	InvSubBytes sub15(.clk(CLK), .in(tempDec[127:120]), .out(InvSubBytes_out[127:120]));
 
-
-	
-	/*mux41_128bit mymux41_128bit(
-								.in0(shiftRowsOut),
-								.in1(),
-								.in2(addRoundKeyOut), 
-								.in3(),
-								.sel(),
-								.out()
-								);
-	*/
-
-
-	always_ff @(posedge CLK or posedge RESET) begin
+	always_ff @(posedge CLK) begin
 		if(RESET) begin
 			tempDec <=  128'd0;
 			LD_E <= 1'b0;
@@ -135,30 +113,124 @@ module AES (
 
 		end 
 	end 
-
+	
+	AES_controller myController(.*);
 	
 
 endmodule
 
 
-module AES_controller (
-	input	 logic CLK,
-	input  logic RESET,
-	input  logic AES_START,
-	output logic AES_DONE,
-	output logic counter,
-	output logic word_sel,
-	output logic ope_sel
-	
-);
+module AES_controller 	(
+							input	logic CLK, RESET, AES_START,
+							output 	logic AES_DONE,
+							output 	logic [4:0]	counter,
+							output 	logic [1:0]	word_sel, ope_sel
+						);
 
 
-enum logic[2:0] {HOLD, addRoundKeyS, InvShiftRowsS, InvSubBytesS, InvMixColumnsS1, InvMixColumnsS2, 
-												InvMixColumnsS3, InvMixColumnsS4, DONE} curr, next;
+	enum logic[2:0] {HOLD, addRoundKeyS, InvShiftRowsS, InvSubBytesS, InvMixColumnsS1, InvMixColumnsS2, 
+						InvMixColumnsS3, InvMixColumnsS4, DONE}curr, next;
+	always_ff @(posedge CLK) begin
+		if(RESET) begin
+			curr 	<= 	HOLD;
+		end 
+		else begin
+			curr 	<=	next;
+		end
+	end
 
+	always_comb begin
+		next 		= 	curr;
+		AES_DONE 	= 	1'b0;
+		counter  	= 	counter;
+		word_sel 	= 	word_sel;
+		ope_sel 	= 	ope_sel;
 
+		unique case (curr)
+			HOLD 			: 	if(AES_START) begin
+									next  	= 	addRoundKeyS;
+								end 
+								else begin
+									next 	=	HOLD;
+								end 
 
+			addRoundKeyS 	: 	if(counter == 5'd0) begin
+									next 	= 	InvShiftRowsS;
+								end 
+								else if(counter == 5'd10) begin
+									next 	= 	DONE;
+								end 
+								else begin
+									next 	= 	InvMixColumnsS1;
+								end 
 
+			InvShiftRows 	: 		next 	= 	InvSubBytesS;
 
+			InvSubBytesS	: 		next 	= 	addRoundKeyS;
 
+			InvMixColumnsS1 : 		next 	= 	InvMixColumnsS2;
+
+			InvMixColumnsS2 : 		next 	= 	InvMixColumnsS3;
+
+			InvMixColumnsS3 : 		next 	= 	InvMixColumnsS4;
+
+			InvMixColumnsS4 : 		next 	= 	InvShiftRowsS;
+
+			DONE 			: 	if(AES_START) begin
+									next 	= 	DONE;
+								end 	
+								else begin
+									next 	= 	HOLD;
+								end 
+			default : 	;
+		endcase
+
+		case (curr)
+			HOLD 			: 	begin 
+									AES_DONE 	= 	1'b0;
+									counter  	= 	5'd0;
+									word_sel 	= 	2'b00;
+									ope_sel 	= 	2'b00;
+								end 
+
+			addRoundKeyS 	: 	begin
+									counter 	= 	counter + 5'd1;
+									ope_sel 	= 	2'b00;
+								end 
+
+			InvShiftRowsS 	: 	begin	
+									ope_sel 	= 	2'b01;
+								end 
+
+			InvSubBytesS	: 	begin 
+									ope_sel 	= 	2'b10;
+								end 
+			InvMixColumnsS1 : 	begin
+									ope_sel 	= 	2'b11;
+									word_sel	= 	2'b00;
+								end 
+
+			InvMixColumnsS2 : 	begin
+									ope_sel 	= 	2'b11;
+									word_sel	= 	2'b01;
+								end 
+
+			InvMixColumnsS3 : 	begin
+									ope_sel 	= 	2'b11;
+									word_sel	= 	2'b10;
+								end 
+
+			InvMixColumnsS4 : 	begin	
+									ope_sel 	= 	2'b11;
+									word_sel	= 	2'b11;
+								end 
+
+			DONE 			: 	begin
+									AES_DONE 	= 	1'b1;
+								end 
+
+			default 		: /* default */;
+
+		endcase
+	end 
 endmodule
