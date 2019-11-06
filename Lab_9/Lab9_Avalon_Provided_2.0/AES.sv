@@ -16,13 +16,62 @@ module AES (
 	input  logic [127:0] AES_MSG_ENC,
 	output logic [127:0] AES_MSG_DEC
 );
-	logic [127:0] tempDec;
-	logic [31:0] mixColIn, mixColOut;
-	logic [127:0] shiftRowsIn, shiftRowsOut, addRoundKeyIn, addRoundKeyKey, addRoundKeyOut, ;
+	logic [127:0] tempDec, next_tem;
+	logic [31:0] mixColOut, word;
+	logic [127:0] shiftRowsOut, addRoundKeyOut, InvSubBytes_out, this_round_key;
 	logic [1407:0] myKeySchedule;
+	logic [4:0] counter;
+	logic [1:0] word_sel, ope_sel;
+	logic LD_E;
 
 	KeyExpansion myKeyExpansion(.clk(CLK), .Cipherkey(AES_KEY), .KeySchedule(myKeySchedule));
+	always_comb begin
+		this_round_key = myKeySchedule[127:0];
+		unique case (counter)
+			5'd0 : this_round_key = myKeySchedule[1407:1280];
+			5'd1 : this_round_key = myKeySchedule[1279:1152];
+			5'd2 : this_round_key = myKeySchedule[1151:1024];
+			5'd3 : this_round_key = myKeySchedule[1023:896];
+			5'd4 : this_round_key = myKeySchedule[895:768];
+			5'd5 : this_round_key = myKeySchedule[767:640];
+			5'd6 : this_round_key = myKeySchedule[639:512];
+			5'd7 : this_round_key = myKeySchedule[511:384];
+			5'd8 : this_round_key = myKeySchedule[383:256];
+			5'd9 : this_round_key = myKeySchedule[255:128];
+			5'd10 : this_round_key = myKeySchedule[127:0];
+			
+		endcase
 
+	end
+
+	always_comb begin
+		word = tempDec[31:0];
+		unique case (word_sel)
+			2'b00: word = tempDec[31:0];
+			2'b01: word = tempDec[63:32];
+			2'b10: word = tempDec[95:64];
+			2'b11: word = tempDec[127:96];
+		endcase
+
+	end
+	always_comb begin
+		next_tem = tempDec;
+		unique case (ope_sel)
+			2'b00: next_tem = addRoundKeyOut;
+			2'b01: next_tem = shiftRowsOut;
+			2'b10: next_tem = InvSubBytes_out;
+			2'b11: begin
+					unique case (word_sel)
+						2'b00: next_tem[31:0] = mixColOut;
+						2'b01: next_tem[63:32] = mixColOut;
+						2'b10: next_tem[95:64] = mixColOut;
+						2'b11: next_tem[127:96] = mixColOut;
+						
+					endcase
+			end
+		
+		endcase
+	end
 	/*
 	MUX layout
 		0	:	InvShiftRows
@@ -31,13 +80,30 @@ module AES (
 		3 	: 	InvMixColumns
 	*/
 
-	addRoundKey myaddRoundKey(.in(addRoundKeyIn), .key(addRoundKeyKey), .out(addRoundKeyOut));
-	InvMixColumns myInvMixColumns(.in(mixColIn), .out(mixColOut));	
-	InvShiftRows myInvShiftRows(.data_in(shiftRowsIn), .data_out(shiftRowsOut));
+	addRoundKey myaddRoundKey(.in(tempDec), .key(this_round_key), .out(addRoundKeyOut));
+	InvMixColumns myInvMixColumns(.in(word), .out(mixColOut));	
+	InvShiftRows myInvShiftRows(.data_in(tempDec), .data_out(shiftRowsOut));
 
-	InvSubBytes sub0(.clk(CLK), .in(tempDec[7:0]), .out());
+	InvSubBytes sub0(.clk(CLK), .in(tempDec[7:0]), .out(InvSubBytes_out[7:0]));
+	InvSubBytes sub1(.clk(CLK), .in(tempDec[15:8]), .out(InvSubBytes_out[15:8]));
+	InvSubBytes sub2(.clk(CLK), .in(tempDec[23:16]), .out(InvSubBytes_out[23:16]));
+	InvSubBytes sub3(.clk(CLK), .in(tempDec[31:24]), .out(InvSubBytes_out[31:24]));
+	InvSubBytes sub4(.clk(CLK), .in(tempDec[39:32]), .out(InvSubBytes_out[39:32]));
+	InvSubBytes sub5(.clk(CLK), .in(tempDec[47:40]), .out(InvSubBytes_out[47:40]));
+	InvSubBytes sub6(.clk(CLK), .in(tempDec[55:48]), .out(InvSubBytes_out[55:48]));
+	InvSubBytes sub7(.clk(CLK), .in(tempDec[63:56]), .out(InvSubBytes_out[63:56]));
+	InvSubBytes sub8(.clk(CLK), .in(tempDec[71:64]), .out(InvSubBytes_out[71:64]));
+	InvSubBytes sub9(.clk(CLK), .in(tempDec[79:72]), .out(InvSubBytes_out[79:72]));
+	InvSubBytes sub10(.clk(CLK), .in(tempDec[87:80]), .out(InvSubBytes_out[87:80]));
+	InvSubBytes sub11(.clk(CLK), .in(tempDec[95:88]), .out(InvSubBytes_out[95:88]));
+	InvSubBytes sub12(.clk(CLK), .in(tempDec[103:96]), .out(InvSubBytes_out[103:96]));
+	InvSubBytes sub13(.clk(CLK), .in(tempDec[111:104]), .out(InvSubBytes_out[111:104]));
+	InvSubBytes sub14(.clk(CLK), .in(tempDec[119:112]), .out(InvSubBytes_out[119:112]));
+	InvSubBytes sub15(.clk(CLK), .in(tempDec[127:120]), .out(InvSubBytes_out[127:120]));
 
-	mux41_128bit mymux41_128bit(
+
+	
+	/*mux41_128bit mymux41_128bit(
 								.in0(shiftRowsOut),
 								.in1(),
 								.in2(addRoundKeyOut), 
@@ -45,21 +111,54 @@ module AES (
 								.sel(),
 								.out()
 								);
+	*/
 
-	enum logic[2:0] {HOLD, addRoundKeyS, InvShiftRowsS, InvSubBytesS, InvMixColumnsS1, InvMixColumnsS2, InvMixColumnsS3, InvMixColumnsS4, DONE} curr, next;
 
 	always_ff @(posedge CLK or posedge RESET) begin
 		if(RESET) begin
 			tempDec <=  128'd0;
-			curr 	<= 	HOLD;
+			LD_E <= 1'b0;
 		end 
 		else begin
-			curr 	<= 	next;
+			if (AES_START && !LD_E) begin
+				tempDec <= AES_MSG_ENC;
+				LD_E <= 1'b1;
+			end
+			else if (!AES_START) begin
+				LD_E <= 1'b0;
+			end
+			else begin 
+				tempDec <= next_tem;
+				AES_MSG_DEC <= next_tem;
+				LD_E <= LD_E;
+			end
+
 		end 
 	end 
 
-	always_comb begin
+	
 
-	end 
+endmodule
+
+
+module AES_controller (
+	input	 logic CLK,
+	input  logic RESET,
+	input  logic AES_START,
+	output logic AES_DONE,
+	output logic counter,
+	output logic word_sel,
+	output logic ope_sel
+	
+);
+
+
+enum logic[2:0] {HOLD, addRoundKeyS, InvShiftRowsS, InvSubBytesS, InvMixColumnsS1, InvMixColumnsS2, 
+												InvMixColumnsS3, InvMixColumnsS4, DONE} curr, next;
+
+
+
+
+
 
 endmodule
