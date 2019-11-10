@@ -35,10 +35,14 @@ initial begin : TEST_VECTORS
     RESET = 1;
 
     #2 RESET = 0;
+	 
+	 
 
-    #6 AES_START = 1;
+    #20 AES_START = 1;
+	 #4	AES_START = 0;
+	 
 
-    #6 AES_START = 0;
+ 
 
  end
  

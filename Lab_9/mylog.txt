@@ -3,6 +3,6 @@ Processor is already paused
 Reading System ID at address 0x00000058: verified
 Initializing CPU cache (if present)
 OK
-Downloading 10000000 ( 0%)Downloading 10010000 (55%)Downloading 1001CF04 (92%)Downloaded 116KB in 1.9s (61.0KB/s)
-Verifying 10000000 ( 0%)Verifying 10010000 (55%)Verifying 1001CF04 (92%)Verified OK                         
+Downloading 10000000 ( 0%)Downloading 10010000 (55%)Downloading 1001D024 (92%)Downloaded 117KB in 2.0s (58.5KB/s)
+Verifying 10000000 ( 0%)Verifying 10010000 (55%)Verifying 1001D024 (92%)Verified OK                         
 Starting processor at address 0x10000230

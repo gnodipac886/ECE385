@@ -22,7 +22,7 @@ int run_mode = 0;
 
 /** charToHex
  *  Convert a single character to the 4-bit value it represents.
- *  
+ *
  *  Input: a character c (e.g. 'A')
  *  Output: converted 4-bit value (e.g. 0xA)
  */
@@ -250,6 +250,22 @@ void encrypt(unsigned char * msg_ascii, unsigned char * key_ascii, unsigned int 
 void decrypt(unsigned int * msg_enc, unsigned int * msg_dec, unsigned int * key)
 {
 	// Implement this function
+	int i;
+	AES_PTR[0] = key[0];
+				AES_PTR[1] = key[1];
+				AES_PTR[2] = key[2];
+				AES_PTR[3] = key[3];
+				AES_PTR[4] = msg_enc[0];
+				AES_PTR[5] = msg_enc[1];
+				AES_PTR[6] = msg_enc[2];
+				AES_PTR[7] = msg_enc[3];
+	AES_PTR[14] = 0x00000001;
+	while (AES_PTR[15] == 0x00000000);
+	for (i = 8; i < 12; i++) {
+		msg_dec[i] = AES_PTR[i];
+	}
+	AES_PTR[14] = 0x00000000;
+
 }
 
 /** main
@@ -284,23 +300,14 @@ int main()
 			for(i = 0; i < 4; i++){
 				printf("%08x", msg_enc[i]);
 			}
-			AES_PTR[0] = key[0];
-			AES_PTR[1] = key[1];
-			AES_PTR[2] = key[2];
-			AES_PTR[3] = key[3];
 
-			AES_PTR[10] = 0xdeadbeef;
-			if (AES_PTR[10] != 0xdeadbeef)
-				printf("error !");
-			else
-				printf("%x\n", AES_PTR[10]);
-			/*printf("\n");
+			printf("\n");
 			decrypt(msg_enc, msg_dec, key);
 			printf("\nDecrypted message is: \n");
 			for(i = 0; i < 4; i++){
 				printf("%08x", msg_dec[i]);
 			}
-			printf("\n");*/
+			printf("\n");
 		}
 	}
 	else {

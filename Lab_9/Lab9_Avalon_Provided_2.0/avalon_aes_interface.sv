@@ -38,7 +38,9 @@ module avalon_aes_interface (
 	output logic [31:0] EXPORT_DATA		// Exported Conduit Signal to LEDs
 );
 
+	logic AES_DONE, AES_START;
 	logic [31:0] outreg [16];
+	logic [127:0] dec_msg;
 
 	always_ff @ (posedge CLK) begin
 		if(RESET) begin
@@ -56,20 +58,29 @@ module avalon_aes_interface (
 			if(AVL_BYTE_EN[3] == 1'b1)
 				outreg[AVL_ADDR][31:24] <= AVL_WRITEDATA[31:24];
 		end
+		else
+		begin
+		outreg[11] 	<= 	dec_msg[31:0];
+		outreg[10] 	<= 	dec_msg[63:32];
+		outreg[9] 	<= 	dec_msg[95:64];
+		outreg[8] 	<= 	dec_msg[127:96]; 
+		AES_START <= outreg[14][0];
+		outreg[15][0] <= AES_DONE;
+		end
 	end
 
 	always_comb begin
-		EXPORT_DATA = {outreg[0][31:16], outreg[3][15:0]};
+		EXPORT_DATA = {outreg[8][31:16], outreg[15][15:0]};
 		AVL_READDATA = (AVL_READ && AVL_CS) ? outreg[AVL_ADDR] : 32'd0;
 	end 
 
 AES myaes (
 			.CLK(CLK),
 		   	.RESET(RESET),
-		   	.AES_START(outreg[14][0]),
-		   	.AES_DONE(outreg[15][0]),
+		   	.AES_START(AES_START),
+		   	.AES_DONE(AES_DONE),
 		   	.AES_KEY({outreg[0], outreg[1], outreg[2], outreg[3]}),
 	       	.AES_MSG_ENC({outreg[4], outreg[5], outreg[6], outreg[7]}),
-	       	.AES_MSG_DEC({outreg[8], outreg[9], outreg[10], outreg[11]})
+	       	.AES_MSG_DEC(dec_msg)
 	       );
 endmodule
