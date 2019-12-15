@@ -1,0 +1,6 @@
+17:18:29 **** Clean-only build of configuration Nios II for project Pokemon-SVE_app_bsp ****
+make clean 
+[BSP clean complete]
+
+17:18:30 Build Finished (took 1s.196ms)
+
