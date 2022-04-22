@@ -12,3 +12,6 @@ Not all reports got full credit.
 ### Hey you.
 ### Yes you.
 ### Stop cheating 😡, go write your own code
+### (◣_◢)
+### ヽ(ｏ`皿′ｏ)ﾉ
+### (╬≖_≖)
